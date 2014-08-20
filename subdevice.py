@@ -242,7 +242,7 @@ class JointPositionActuator(SubDevice):
     motor_number = property(_get_motor_number, _set_motor_number)
     pwm_value = property(_get_pwm_value, _set_pwm_value)
 
-    def go_to(self, position, time=1000., update_type="ClearAll"):
+    def go_to(self, dcm, position, time=3000., update_type="ClearAll", wait=True):
         """To comment."""
         if position == "min":
             position = self.minimum
@@ -252,6 +252,9 @@ class JointPositionActuator(SubDevice):
             position = float(position)
 
         self.value = [[[position, self.dcm.getTime(time)]], update_type]
+
+        if wait:
+            tools.wait(dcm, time)
 
     def explore(self, time_to_go_limit, max_to_min=True):
         """
