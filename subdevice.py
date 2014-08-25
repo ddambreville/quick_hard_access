@@ -1206,3 +1206,13 @@ class FanStatus(SubDevice):
 
     status = property(_get_status, _set_status)
 
+class Laser(SubDevice):
+    """
+    Class for JULIETTE robot.
+    It describes laser sensor.
+    [Object creation example]
+    laser = Laser(dcm, mem, "Front/Horizontal/Seg01/X/Sensor")
+    """
+    def __init__(self, dcm, mem, key):
+        SubDevice.__init__(self, dcm, mem, key)
+        self.name = "Platform/LaserSensor/" + key
