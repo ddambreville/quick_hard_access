@@ -3,8 +3,11 @@ import os
 import zipfile
 import subdevice
 
+
 class Timer(object):
+
     """Class which defines a timer synchronized on DCM module"""
+
     def __init__(self, dcm, time_out):
         self.dcm = dcm
         self.time_out = time_out
@@ -24,11 +27,13 @@ class Timer(object):
         """Returns True if time is out"""
         return self.dcm_time() >= self.time_out
 
+
 def wait(dcm, time_to_wait):
     """Wait time synchronized on DCM module"""
     initial_time = dcm.getTime(0)
     while dcm.getTime(0) - initial_time < time_to_wait:
         pass
+
 
 def use_section(my_file, section):
     """Use a section from a configuration file."""
@@ -45,6 +50,7 @@ def use_section(my_file, section):
             to_use.append(key)
 
     return to_use
+
 
 def read_section(my_file, section):
     """Read section from a configuration file."""
@@ -64,10 +70,12 @@ def read_section(my_file, section):
     else:
         return {}
 
+
 def read_parameter(my_file, section, parameter):
     """Read parameter from configuration file."""
     section_to_return = read_section(my_file, section)
     return section_to_return[parameter][0]
+
 
 def read_int_tuple(my_file, section, parameter):
     """To comment."""
@@ -88,6 +96,7 @@ def read_over_section(config_before, my_file, section):
 
     return config_after
 
+
 def log_results(log_dic, *params):
     """Logger."""
     for param in params:
@@ -97,6 +106,7 @@ def log_results(log_dic, *params):
             log_dic[key] = []
 
         log_dic[key].append(value)
+
 
 def log_file_write(file_path, subdevice):
     """To comment."""
@@ -109,7 +119,8 @@ def log_file_write(file_path, subdevice):
         pass
 
     with open(file_path, 'w') as my_file:
-        my_file.write("% " + subdevice_type + " " + subdevice_shortname.replace("/", "") + " " + str(subdevice.state) + "\n")
+        my_file.write("% " + subdevice_type + " " + subdevice_shortname.replace(
+            "/", "") + " " + str(subdevice.state) + "\n")
 
         [my_file.write(key + " ") for key in subdevice.log_dic]
         my_file.write("\n")
@@ -132,16 +143,19 @@ def log_file_write(file_path, subdevice):
                 my_file.write("\n")
                 line_num += 1
 
+
 def zip_results(zipFile, filePath):
     """To comment."""
     with zipfile.ZipFile(zipFile, mode='a', compression=zipfile.ZIP_STORED) as zip_object:
         zip_object.write(filePath)
+
 
 def floatExcept(my_string):
     try:
         return float(my_string)
     except (RuntimeError, TypeError, NameError):
         return my_string
+
 
 def separate(my_string, separator):
     """To comment."""
@@ -153,6 +167,7 @@ def separate(my_string, separator):
         pass
     return dum
 
+
 def int_to_two_digit_string(number):
     """Convert an integer in a two digits string."""
     if number < 10:
@@ -160,8 +175,11 @@ def int_to_two_digit_string(number):
     else:
         return str(number)
 
+
 class SlidingAverage(object):
+
     """Create a sliding average object."""
+
     def __init__(self, nb_points):
         self.nb_points = nb_points
         self.current_point = 0
@@ -186,6 +204,7 @@ class SlidingAverage(object):
 
         return float(my_sum) / len(self.points)
 
+
 def read_list_file(filepath):
     """Read a file and return a list containing the information."""
     my_list = []
@@ -194,6 +213,7 @@ def read_list_file(filepath):
         if line[0] != '#':
             my_list.append(line)
     return my_list
+
 
 def reduce_name(name, sep, *strToRemove):
     """Reduce name by removing specified strings from it"""
@@ -204,12 +224,15 @@ def reduce_name(name, sep, *strToRemove):
 
     reduced_name = name_sp[0]
     for elt in name_sp[1:]:
-        reduced_name += (sep+elt)
+        reduced_name += (sep + elt)
 
     return reduced_name
 
+
 class Logger(object):
+
     """a completer"""
+
     def __init__(self):
         self.log_dic = {}
 
@@ -255,6 +278,7 @@ class Logger(object):
                     my_file.write("\n")
                     line_num += 1
 
+
 def jointlistcreation_from_state(dico):
     """
     Return a list of all joints in a configuration file of position
@@ -271,6 +295,7 @@ def jointlistcreation_from_state(dico):
         list_to_create.append(str(joint))
     return list_to_create
 
+
 def is_stiffness_null(dcm, mem, joint_list):
     """Returns True if all joint hardness are null."""
     cpt = 0
@@ -279,10 +304,25 @@ def is_stiffness_null(dcm, mem, joint_list):
             dcm,
             mem,
             str(joint)
-            )
+        )
         if float(joint_hardness_actuator.value) >= 0.0:
             cpt += 1
     if cpt == 0:
         return True
     else:
         return False
+
+
+class switch( object ):
+    """
+    Class which allow to make a switch/case
+    operation in Python
+    """
+    value = None
+    def __new__(self, value):
+        self.value = value
+        return True
+
+def case(*args):
+    """case function"""
+    return any((arg == switch.value for arg in args))
