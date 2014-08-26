@@ -148,6 +148,16 @@ class SubDevice(object):
         """Set subdevice's value."""
         self.set("Value", [[valeur[0], self.dcm.getTime(valeur[1])]])
 
+    def _get_multiple_quick_value(self):
+        """Get subdevice's value."""
+        return self.get("Value")
+
+    def _set_multiple_quick_value(self, list_of_tuples):
+        """Set subdevice's value."""
+        list_of_tuples = \
+        [[float(tup[0]), self.dcm.getTime(tup[1])] for tup in list_of_tuples]
+        self.set("Value", list_of_tuples)
+
     device = property(_get_device, _set_device)
     gain = property(_get_gain, _set_gain)
     maximum = property(_get_maximum, _set_maximum)
@@ -158,6 +168,7 @@ class SubDevice(object):
     subdevice_type = property(_get_subdevice_type, _set_subdevice_type)
     value = property(_get_value, _set_value)
     qvalue = property(_get_quick_value, _set_quick_value)
+    mqvalue = property(_get_multiple_quick_value, _set_multiple_quick_value)
 
     def get(self, attribut):
         """Accessor which uses ALMemory module."""
@@ -906,6 +917,47 @@ class WheelCurrentSensor(SubDevice):
 
     current_type = property(_get_current_type, _set_current_type)
     shunt_resistance = property(_get_shunt_resistance, _set_shunt_resistance)
+
+class WheelsMotion(object):
+    """Wheels control class."""
+    def __init__(self, dcm, mem, max_speed_proportion):
+        self.dcm = dcm
+        self.mem = mem
+        self.max_speed_proportion = max_speed_proportion
+        self.wheelfr_speed_actuator = WheelSpeedActuator(dcm, mem, "WheelFR")
+        self.wheelfl_speed_actuator = WheelSpeedActuator(dcm, mem, "WheelFL")
+        self.wheelb_speed_actuator = WheelSpeedActuator(dcm, mem, "WheelB")
+        self.wheelfr_stiffness_actuator = WheelStiffnessActuator(dcm, mem, "WheelFR")
+        self.wheelfl_stiffness_actuator = WheelStiffnessActuator(dcm, mem, "WheelFL")
+        self.wheelb_stiffness_actuator = WheelStiffnessActuator(dcm, mem, "WheelB")
+        self.r_roue = 0.07
+        self.r_cercle = 0.1762
+        self.gamma_a = 2.5  #rad.s-2
+        self.gamma_f = 2.5  #rad.s-2
+        self.speed = self.max_speed_proportion*self.wheelb_speed_actuator.maximum
+        self.t_a = self.speed / self.gamma_a
+        self.t_f = self.speed / self.gamma_f
+
+    def stiff_wheels(self, wheels_list, value):
+        """Set stiffness to 1.0 for wheel names in wheels_list."""
+        for wheel_name in wheels_list:
+            wheel_stiff_act = WheelStiffnessActuator(dcm, mem, wheel_name)
+            wheel_stiff_act.qvalue = (value, 0.0)
+
+    def moveX(self, distance):
+        """The robot goes forward for 'distance' meters"""
+        t_v = (distance - (0.5*self.gamma_a*self.t_a*self.t_a) - (0.5*self.gamma_f*self.t_f*self.t_f)) / self.speed
+        t1 = self.t_a
+        t2 = t1 + t_v
+        t3 = t2 + self.t_f
+
+        self.stiff_wheels(["WheelFR", "WheelFL"], 1.0)
+
+
+
+
+
+
 
 class Switch(SubDevice):
     """
