@@ -153,7 +153,11 @@ class SubDevice(object):
         return self.get("Value")
 
     def _set_multiple_quick_value(self, list_of_tuples):
-        """Set subdevice's value."""
+        """
+        Set subdevice's value.
+        joint_hard_act = subdevice.JointHardnessActuator(dcm, mem, "HipPitch")
+        joint_hard_act.mqvalue = [(1, 0), (1, 1000), (0, 1001)]
+        """
         list_of_tuples = \
         [[float(tup[0]), self.dcm.getTime(tup[1])] for tup in list_of_tuples]
         self.set("Value", list_of_tuples)
