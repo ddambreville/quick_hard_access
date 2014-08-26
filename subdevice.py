@@ -17,6 +17,7 @@ The following classes have been added
 '''
 
 import tools
+from math import pi
 
 def multiple_set(dcm, mem, datas, update_type="ClearAll", wait=False):
     """
@@ -928,39 +929,133 @@ class WheelsMotion(object):
         self.dcm = dcm
         self.mem = mem
         self.max_speed_proportion = max_speed_proportion
+
         self.wheelfr_speed_actuator = WheelSpeedActuator(dcm, mem, "WheelFR")
         self.wheelfl_speed_actuator = WheelSpeedActuator(dcm, mem, "WheelFL")
         self.wheelb_speed_actuator = WheelSpeedActuator(dcm, mem, "WheelB")
-        self.wheelfr_stiffness_actuator = WheelStiffnessActuator(dcm, mem, "WheelFR")
-        self.wheelfl_stiffness_actuator = WheelStiffnessActuator(dcm, mem, "WheelFL")
-        self.wheelb_stiffness_actuator = WheelStiffnessActuator(dcm, mem, "WheelB")
-        self.r_roue = 0.07
-        self.r_cercle = 0.1762
-        self.gamma_a = 2.5  #rad.s-2
-        self.gamma_f = 2.5  #rad.s-2
-        self.speed = self.max_speed_proportion*self.wheelb_speed_actuator.maximum
-        self.t_a = self.speed / self.gamma_a
-        self.t_f = self.speed / self.gamma_f
+
+        self.r_roue = 0.07  #m
+        self.r_cercle = 0.1762  #m
+
+        self.gamma_a = 0.2  #m.s-2
+        self.gamma_f = 0.2  #m.s-2
+        self.speed = \
+        self.max_speed_proportion*self.wheelb_speed_actuator.maximum  #rad/s
+        self.vmax = self.r_roue * self.speed  #m/s
+
+        self.t_a = self.vmax / self.gamma_a  #s
+        self.t_f = self.vmax / self.gamma_f  #s
 
     def stiff_wheels(self, wheels_list, value):
         """Set stiffness to 1.0 for wheel names in wheels_list."""
         for wheel_name in wheels_list:
-            wheel_stiff_act = WheelStiffnessActuator(dcm, mem, wheel_name)
+            wheel_stiff_act = WheelStiffnessActuator(self.dcm, self.mem, wheel_name)
             wheel_stiff_act.qvalue = (value, 0.0)
 
-    def moveX(self, distance):
+    def move_x(self, distance, wait=True):
         """The robot goes forward for 'distance' meters"""
-        t_v = (distance - (0.5*self.gamma_a*self.t_a*self.t_a) - (0.5*self.gamma_f*self.t_f*self.t_f)) / self.speed
-        t1 = self.t_a
-        t2 = t1 + t_v
-        t3 = t2 + self.t_f
+        t_v = (abs(distance) - (0.5*self.gamma_a*self.t_a*self.t_a) - (0.5*self.gamma_f*self.t_f*self.t_f)) / self.vmax
+        if t_v <=0:
+            print "temps a vitesse constante nul"
+        else:
+            t1 = self.t_a
+            t2 = t1 + t_v
+            t3 = t2 + self.t_f
 
-        self.stiff_wheels(["WheelFR", "WheelFL"], 1.0)
+            self.stiff_wheels(["WheelFR", "WheelFL"], 1.0)
 
+            if distance < 0:
+                self.speed = -self.speed
 
+            timed_commands_wheelfr = [
+                (0.0, 0),
+                (-self.speed, 1000*t1),
+                (-self.speed, 1000*t2),
+                (0.0, 1000*t3)]
 
+            timed_commands_wheelfl = [
+                (0.0, 0),
+                (self.speed, 1000*t1),
+                (self.speed, 1000*t2),
+                (0.0, 1000*t3)]
 
+            self.wheelfr_speed_actuator.mqvalue = timed_commands_wheelfr
+            self.wheelfl_speed_actuator.mqvalue = timed_commands_wheelfl
 
+            if wait:
+                tools.wait(self.dcm, 1000*t3)
+                self.stiff_wheels(["WheelFR", "WheelFL"], 0.0)
+
+    def move_y(self, distance, wait=True):
+        """The robot goes forward for 'distance' meters"""
+        t_v = (abs(distance) - (0.5*self.gamma_a*self.t_a*self.t_a) - (0.5*self.gamma_f*self.t_f*self.t_f)) / self.vmax
+        if t_v <=0:
+            print "temps a vitesse constante nul"
+        else:
+            t1 = self.t_a
+            t2 = t1 + t_v
+            t3 = t2 + self.t_f
+
+            self.stiff_wheels(["WheelFR", "WheelFL", "WheelB"], 1.0)
+
+            if distance < 0:
+                self.speed = -self.speed
+
+            timed_commands_wheelfr = [
+                (0.0, 0),
+                (-0.5*self.speed, 1000*t1),
+                (-0.5*self.speed, 1000*t2),
+                (0.0, 1000*t3)]
+
+            timed_commands_wheelfl = [
+                (0.0, 0),
+                (-0.5*self.speed, 1000*t1),
+                (-0.5*self.speed, 1000*t2),
+                (0.0, 1000*t3)]
+
+            timed_commands_wheelb = [
+                (0.0, 0),
+                (self.speed, 1000*t1),
+                (self.speed, 1000*t2),
+                (0.0, 1000*t3)]
+
+            self.wheelfr_speed_actuator.mqvalue = timed_commands_wheelfr
+            self.wheelfl_speed_actuator.mqvalue = timed_commands_wheelfl
+            self.wheelb_speed_actuator.mqvalue = timed_commands_wheelb
+
+            if wait:
+                tools.wait(self.dcm, 1000*t3)
+                self.stiff_wheels(["WheelFR", "WheelFL", "WheelB"], 0.0)
+
+    def rotate(self, nb_tour, wait=True):
+        theta_tot = (self.r_cercle/self.r_roue)*2*pi*nb_tour
+        t_v = (abs(theta_tot) - (0.5*self.gamma_a*self.t_a*self.t_a) - (0.5*self.gamma_f*self.t_f*self.t_f)) / self.speed
+
+        if t_v <=0:
+            print "temps a vitesse constante nul"
+        else:
+            t1 = self.t_a
+            t2 = t1 + t_v
+            t3 = t2 + self.t_f
+
+            self.stiff_wheels(["WheelFR", "WheelFL", "WheelB"], 1.0)
+
+            if nb_tour < 0:
+                self.speed = -self.speed
+
+            timed_commands = [
+                (0.0, 0),
+                (self.speed, 1000*t1),
+                (self.speed, 1000*t2),
+                (0.0, 1000*t3)]
+
+            self.wheelfr_speed_actuator.mqvalue = timed_commands
+            self.wheelfl_speed_actuator.mqvalue = timed_commands
+            self.wheelb_speed_actuator.mqvalue = timed_commands
+
+            if wait:
+                tools.wait(self.dcm, 1000*t3)
+                self.stiff_wheels(["WheelFR", "WheelFL", "WheelB"], 0.0)
 
 
 class Switch(SubDevice):
