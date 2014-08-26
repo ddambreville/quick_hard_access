@@ -140,6 +140,14 @@ class SubDevice(object):
         """Set subdevice's value."""
         self.set("Value", request[0], request[1])
 
+    def _get_quick_value(self):
+        """Get subdevice's value."""
+        return self.get("Value")
+
+    def _set_quick_value(self, valeur):
+        """Set subdevice's value."""
+        self.set("Value", [[valeur[0], self.dcm.getTime(valeur[1])]])
+
     device = property(_get_device, _set_device)
     gain = property(_get_gain, _set_gain)
     maximum = property(_get_maximum, _set_maximum)
@@ -149,6 +157,7 @@ class SubDevice(object):
     subdevice_number = property(_get_subdevice_number, _set_subdevice_number)
     subdevice_type = property(_get_subdevice_type, _set_subdevice_type)
     value = property(_get_value, _set_value)
+    qvalue = property(_get_quick_value, _set_quick_value)
 
     def get(self, attribut):
         """Accessor which uses ALMemory module."""
@@ -156,7 +165,8 @@ class SubDevice(object):
 
     def set(self, attribut, timed_commands, update_type="ClearAll"):
         """Mutator which uses DCM module."""
-        self.dcm.set([self.name + "/" + attribut, update_type, timed_commands])
+        key = self.name + "/" + attribut
+        self.dcm.set([key, update_type, timed_commands])
 
 class JointPositionActuator(SubDevice):
     """
