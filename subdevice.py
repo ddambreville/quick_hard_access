@@ -149,6 +149,18 @@ class SubDevice(object):
         """Set subdevice's value."""
         self.set("Value", [[valeur[0], self.dcm.getTime(valeur[1])]])
 
+    def _get_quick_quick_value(self):
+        """Get subdevice's value."""
+        return self.get("Value")
+
+    def _set_quick_quick_value(self, valeur):
+        """Set subdevice's value immediatly to the chosen value 'valeur'."""
+        if self.subdevice_type not in ("ActuatorJointSpeed", "Joint"):
+            self.set("Value", [[valeur, self.dcm.getTime(0)]])
+        else:
+            print "qqvalue does not work with joints position actuator"
+            print "qqvalue does not work with wheels speed actuator"
+
     def _get_multiple_quick_value(self):
         """Get subdevice's value."""
         return self.get("Value")
@@ -173,6 +185,7 @@ class SubDevice(object):
     subdevice_type = property(_get_subdevice_type, _set_subdevice_type)
     value = property(_get_value, _set_value)
     qvalue = property(_get_quick_value, _set_quick_value)
+    qqvalue = property(_get_quick_quick_value, _set_quick_quick_value)
     mqvalue = property(_get_multiple_quick_value, _set_multiple_quick_value)
 
     def get(self, attribut):
@@ -678,9 +691,12 @@ class WheelSpeedActuator(SubDevice):
         self.value = [[[0.0, self.dcm.getTime(2*ta+tv)]], "Merge"]
         if second_invert_trapeze is True:
             offset = 2*ta+tv
-            self.value = [[[-speed_command, self.dcm.getTime(offset+ta)]], "Merge"]
-            self.value = [[[-speed_command, self.dcm.getTime(offset+ta+tv)]], "Merge"]
-            self.value = [[[0.0, self.dcm.getTime(2*offset)]], "Merge"]
+            self.value = \
+            [[[-speed_command, self.dcm.getTime(offset+ta)]], "Merge"]
+            self.value = \
+            [[[-speed_command, self.dcm.getTime(offset+ta+tv)]], "Merge"]
+            self.value = \
+            [[[0.0, self.dcm.getTime(2*offset)]], "Merge"]
 
 class WheelSpeedSensor(SubDevice):
     """
@@ -949,13 +965,15 @@ class WheelsMotion(object):
     def stiff_wheels(self, wheels_list, value):
         """Set stiffness to 1.0 for wheel names in wheels_list."""
         for wheel_name in wheels_list:
-            wheel_stiff_act = WheelStiffnessActuator(self.dcm, self.mem, wheel_name)
+            wheel_stiff_act = \
+            WheelStiffnessActuator(self.dcm, self.mem, wheel_name)
             wheel_stiff_act.qvalue = (value, 0.0)
 
     def move_x(self, distance, wait=True):
         """The robot goes forward for 'distance' meters"""
-        t_v = (abs(distance) - (0.5*self.gamma_a*self.t_a*self.t_a) - (0.5*self.gamma_f*self.t_f*self.t_f)) / self.vmax
-        if t_v <=0:
+        t_v = (abs(distance) - (0.5*self.gamma_a*self.t_a*self.t_a) - \
+            (0.5*self.gamma_f*self.t_f*self.t_f)) / self.vmax
+        if t_v <= 0:
             print "temps a vitesse constante nul"
         else:
             t1 = self.t_a
@@ -988,8 +1006,9 @@ class WheelsMotion(object):
 
     def move_y(self, distance, wait=True):
         """The robot goes forward for 'distance' meters"""
-        t_v = (abs(distance) - (0.5*self.gamma_a*self.t_a*self.t_a) - (0.5*self.gamma_f*self.t_f*self.t_f)) / self.vmax
-        if t_v <=0:
+        t_v = (abs(distance) - (0.5*self.gamma_a*self.t_a*self.t_a) - \
+            (0.5*self.gamma_f*self.t_f*self.t_f)) / self.vmax
+        if t_v <= 0:
             print "temps a vitesse constante nul"
         else:
             t1 = self.t_a
@@ -1029,9 +1048,10 @@ class WheelsMotion(object):
 
     def rotate(self, nb_tour, wait=True):
         theta_tot = (self.r_cercle/self.r_roue)*2*pi*nb_tour
-        t_v = (abs(theta_tot) - (0.5*self.gamma_a*self.t_a*self.t_a) - (0.5*self.gamma_f*self.t_f*self.t_f)) / self.speed
+        t_v = (abs(theta_tot) - (0.5*self.gamma_a*self.t_a*self.t_a) -\
+            (0.5*self.gamma_f*self.t_f*self.t_f)) / self.speed
 
-        if t_v <=0:
+        if t_v <= 0:
             print "temps a vitesse constante nul"
         else:
             t1 = self.t_a
