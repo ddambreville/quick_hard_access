@@ -1216,3 +1216,15 @@ class Laser(SubDevice):
     def __init__(self, dcm, mem, key):
         SubDevice.__init__(self, dcm, mem, key)
         self.name = "Platform/LaserSensor/" + key
+
+class Bumper(SubDevice):
+    """
+    Class for JULIETTE robot.
+    It describes bumpers sensors.
+    [Object creation example]
+    bumper = Bumper(dcm, mem, "Back")
+    """
+    def __init__(self, dcm, mem, key):
+        SubDevice.__init__(self, dcm, mem, key)
+        self.name = "Platform/" + key + "/Bumper/Sensor"
+
