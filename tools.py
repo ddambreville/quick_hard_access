@@ -291,8 +291,9 @@ def jointlistcreation_from_state(dico):
     """
     list_to_create = list()
     for key in dico:
-        joint = key.split("/")[0]
-        list_to_create.append(str(joint))
+        if key not in ("Time",):
+            joint = key.split("/")[0]
+            list_to_create.append(str(joint))
     return list_to_create
 
 
@@ -300,11 +301,8 @@ def is_stiffness_null(dcm, mem, joint_list):
     """Returns True if all joint hardness are null."""
     cpt = 0
     for joint in joint_list:
-        joint_hardness_actuator = subdevice.JointHardnessActuator(
-            dcm,
-            mem,
-            str(joint)
-        )
+        joint_hardness_actuator = \
+        subdevice.JointHardnessActuator(dcm, mem, str(joint))
         if float(joint_hardness_actuator.value) >= 0.0:
             cpt += 1
     if cpt == 0:
@@ -312,6 +310,22 @@ def is_stiffness_null(dcm, mem, joint_list):
     else:
         return False
 
+def are_there_null_stiffnesses(dcm, mem, joint_list):
+    """
+    Return a boolean which indicates if one or more joint stiffnesses are null.
+    If some joints stiffnesses are null, it indicates which ones:
+    [True, ['HipPitch', 'KneePitch']]
+    If no stiffnesses are null, it returns [False, []]
+    """
+    list_of_joint = list()
+    state = is_stiffness_null(dcm, mem, joint_list)
+    if state is True:
+        for joint in joint_list:
+            joint_hardness_actuator = \
+            subdevice.JointHardnessActuator(dcm, mem, str(joint))
+            if float(joint_hardness_actuator.value) == 0.0:
+                list_of_joint.append(joint)
+    return [state, list_of_joint]
 
 class switch( object ):
     """
