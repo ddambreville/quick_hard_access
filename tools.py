@@ -327,6 +327,18 @@ def are_there_null_stiffnesses(dcm, mem, joint_list):
                 list_of_joint.append(joint)
     return [state, list_of_joint]
 
+def stiff_joints(dcm, mem, joint_list):
+    """Stiff joints in joint list."""
+    for joint in joint_list:
+        joint_hardness_act = subdevice.JointHardnessActuator(dcm, mem, joint)
+        joint_hardness_act.qqvalue = 1.0
+
+def unstiff_joints(dcm, mem, joint_list):
+    """Unstiff joints in joint list."""
+    for joint in joint_list:
+        joint_hardness_act = subdevice.JointHardnessActuator(dcm, mem, joint)
+        joint_hardness_act.qqvalue = 0.0
+
 class switch( object ):
     """
     Class which allow to make a switch/case
