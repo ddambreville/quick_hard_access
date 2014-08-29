@@ -17,7 +17,7 @@ The following classes have been added
 '''
 
 import tools
-from math import pi
+from math import pi, cos
 
 def multiple_set(dcm, mem, datas, update_type="ClearAll", wait=False):
     """
@@ -957,7 +957,7 @@ class WheelsMotion(object):
         self.gamma_f = 0.2  #m.s-2
         self.speed = \
         self.max_speed_proportion*self.wheelb_speed_actuator.maximum  #rad/s
-        self.vmax = self.r_roue * self.speed  #m/s
+        self.vmax = self.r_roue * self.speed * cos(0.49562289301808176428859739121848) #m/s
 
         self.t_a = self.vmax / self.gamma_a  #s
         self.t_f = self.vmax / self.gamma_f  #s
@@ -983,18 +983,20 @@ class WheelsMotion(object):
             self.stiff_wheels(["WheelFR", "WheelFL"], 1.0)
 
             if distance < 0:
-                self.speed = -self.speed
+                speed = -self.speed
+            else:
+                speed = self.speed
 
             timed_commands_wheelfr = [
                 (0.0, 0),
-                (-self.speed, 1000*t1),
-                (-self.speed, 1000*t2),
+                (-speed, 1000*t1),
+                (-speed, 1000*t2),
                 (0.0, 1000*t3)]
 
             timed_commands_wheelfl = [
                 (0.0, 0),
-                (self.speed, 1000*t1),
-                (self.speed, 1000*t2),
+                (speed, 1000*t1),
+                (speed, 1000*t2),
                 (0.0, 1000*t3)]
 
             self.wheelfr_speed_actuator.mqvalue = timed_commands_wheelfr
