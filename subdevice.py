@@ -952,12 +952,14 @@ class WheelsMotion(object):
 
         self.r_roue = 0.07  #m
         self.r_cercle = 0.1762  #m
+        self.angle_wheels_robot = 0.49562289301808176428859739121848 #rad - absolute angle between front wheels x axes and robot x axis = rad(90°-(123.2058°/2)) . 
+                                                                     # 123.2058° is the angle between the y axis of the two front wheels (Doc Pepper). 
 
         self.gamma_a = 0.2  #m.s-2
         self.gamma_f = 0.2  #m.s-2
         self.speed = \
         self.max_speed_proportion*self.wheelb_speed_actuator.maximum  #rad/s
-        self.vmax = self.r_roue * self.speed * cos(0.49562289301808176428859739121848) #m/s
+        self.vmax = self.r_roue * self.speed * cos(self.angle_wheels_robot) #m/s
 
         self.t_a = self.vmax / self.gamma_a  #s
         self.t_f = self.vmax / self.gamma_f  #s
