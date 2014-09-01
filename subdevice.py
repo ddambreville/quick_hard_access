@@ -212,6 +212,7 @@ class JointPositionActuator(SubDevice):
     def __init__(self, dcm, mem, short_name):
         SubDevice.__init__(self, dcm, mem, short_name)
         self.short_name = short_name
+        self.header_name = "_".join([self.short_name, "Position", "Actuator"])
         self.name = short_name + "/Position/Actuator"
 
     def _get_max_current(self):
@@ -338,6 +339,7 @@ class JointPositionSensor(SubDevice):
     def __init__(self, dcm, mem, short_name):
         SubDevice.__init__(self, dcm, mem, short_name)
         self.short_name = short_name
+        self.header_name = "_".join([self.short_name, "Position", "Sensor"])
         self.name = short_name + "/Position/Sensor"
 
     def _get_gear_ratio(self):
@@ -431,6 +433,7 @@ class JointHardnessActuator(SubDevice):
     def __init__(self, dcm, mem, short_name):
         SubDevice.__init__(self, dcm, mem, short_name)
         self.short_name = short_name
+        self.header_name = "_".join([self.short_name, "Actuator"])
         self.name = short_name + "/Hardness/Actuator"
 
     def _get_stiffness_decrease_rate(self):
@@ -454,6 +457,7 @@ class JointCurrentSensor(SubDevice):
     def __init__(self, dcm, mem, short_name):
         SubDevice.__init__(self, dcm, mem, short_name)
         self.short_name = short_name
+        self.header_name = "_".join([self.short_name, "Current"])
         self.name = short_name + "/ElectricCurrent/Sensor"
 
     def _get_current_type(self):
@@ -489,6 +493,7 @@ class JointTemperature(SubDevice):
     def __init__(self, dcm, mem, short_name):
         SubDevice.__init__(self, dcm, mem, short_name)
         self.short_name = short_name
+        self.header_name = "_".join([self.short_name, "Temperature"])
         self.name = short_name + "/Temperature/Sensor"
 
     def _get_adress_temperature_sensor(self):
