@@ -246,6 +246,16 @@ class Logger(object):
 
             self.log_dic[key].append(value)
 
+    def log_from_list(self, params):
+        """Log the chosen parameters"""
+        for param in params:
+            key = param[0]
+            value = param[1]
+            if self.log_dic.has_key(key) is False:
+                self.log_dic[key] = []
+
+            self.log_dic[key].append(value)
+
     def log_file_write(self, file_path):
         """Write results from the dictionnary."""
         try:
@@ -331,7 +341,7 @@ def stiff_joints(dcm, mem, joint_list):
     """Stiff joints in joint list."""
     for joint in joint_list:
         joint_hardness_act = subdevice.JointHardnessActuator(dcm, mem, joint)
-        joint_hardness_act.qqvalue = 1.0
+        joint_hardness_act.qqvalue = 0.8
 
 def unstiff_joints(dcm, mem, joint_list):
     """Unstiff joints in joint list."""
