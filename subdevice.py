@@ -19,6 +19,7 @@ The following classes have been added
 import tools
 from math import pi, cos
 
+
 def multiple_set(dcm, mem, datas, update_type="ClearAll", wait=False):
     """
     Allows robot to take the chosen position.
@@ -33,7 +34,7 @@ def multiple_set(dcm, mem, datas, update_type="ClearAll", wait=False):
             "Alias",
             [item + "/Value" for item in datas_without_time.keys()]
         ]
-        )
+    )
 
     for name, command in datas_without_time.items():
         for index, value in enumerate(command):
@@ -55,13 +56,16 @@ def multiple_set(dcm, mem, datas, update_type="ClearAll", wait=False):
             [dcm.getTime(time) for time in times],
             datas_without_time.values()
         ]
-        )
+    )
 
     if wait:
         tools.wait(dcm, times[-1])
 
+
 class SubDevice(object):
+
     """Class which describes a joint."""
+
     def __init__(self, dcm, mem, name):
         self.dcm = dcm
         self.mem = mem
@@ -71,7 +75,7 @@ class SubDevice(object):
 
     def _get_device(self):
         """Get subdevice's device from ALMemory."""
-        return  self.get("Device")
+        return self.get("Device")
 
     def _set_device(self, request):
         """Set subdevice's device"""
@@ -172,7 +176,8 @@ class SubDevice(object):
         joint_hard_act.mqvalue = [(1, 0), (1, 1000), (0, 1001)]
         """
         list_of_tuples = \
-        [[float(tup[0]), self.dcm.getTime(tup[1])] for tup in list_of_tuples]
+            [[float(tup[0]), self.dcm.getTime(tup[1])]
+             for tup in list_of_tuples]
         self.set("Value", list_of_tuples)
 
     device = property(_get_device, _set_device)
@@ -197,7 +202,9 @@ class SubDevice(object):
         key = self.name + "/" + attribut
         self.dcm.set([key, update_type, timed_commands])
 
+
 class JointPositionActuator(SubDevice):
+
     """
     Class which defines a joint characterized by :
     - its sub-device
@@ -209,6 +216,7 @@ class JointPositionActuator(SubDevice):
     - its motor number
     - its pulse width modulation value
     """
+
     def __init__(self, dcm, mem, short_name):
         SubDevice.__init__(self, dcm, mem, short_name)
         self.short_name = short_name
@@ -275,7 +283,7 @@ class JointPositionActuator(SubDevice):
     invert_control_direction = property(
         _get_invert_control_direction,
         _set_invert_control_direction
-        )
+    )
     k_d = property(_get_k_d, _set_k_d)
     k_i = property(_get_k_i, _set_k_i)
     k_p = property(_get_k_p, _set_k_p)
@@ -324,7 +332,9 @@ class JointPositionActuator(SubDevice):
                     ]
                 ])
 
+
 class JointPositionSensor(SubDevice):
+
     """
     Class which defines a joint characterized by :
     - its gear ratio
@@ -336,6 +346,7 @@ class JointPositionSensor(SubDevice):
     - its position chain MRE joint
     - its position chain MRE motor
     """
+
     def __init__(self, dcm, mem, short_name):
         SubDevice.__init__(self, dcm, mem, short_name)
         self.short_name = short_name
@@ -425,11 +436,14 @@ class JointPositionSensor(SubDevice):
         _get_position_chain_mre_motor,
         _set_position_chain_mre_motor)
 
+
 class JointHardnessActuator(SubDevice):
+
     """
     Class which defines a joint hardness characterized by :
     - its stiffness decrease rate
     """
+
     def __init__(self, dcm, mem, short_name):
         SubDevice.__init__(self, dcm, mem, short_name)
         self.short_name = short_name
@@ -448,12 +462,15 @@ class JointHardnessActuator(SubDevice):
         _get_stiffness_decrease_rate,
         _set_stiffness_decrease_rate)
 
+
 class JointCurrentSensor(SubDevice):
+
     """
     Class which defines a joint characterized by :
     - its current type
     - its shunt resistance
     """
+
     def __init__(self, dcm, mem, short_name):
         SubDevice.__init__(self, dcm, mem, short_name)
         self.short_name = short_name
@@ -479,7 +496,9 @@ class JointCurrentSensor(SubDevice):
     current_type = property(_get_current_type, _set_current_type)
     shunt_resistance = property(_get_shunt_resistance, _set_shunt_resistance)
 
+
 class JointTemperature(SubDevice):
+
     """
     Class which defines a joint characterized by :
     - its adress temperature sensor
@@ -490,6 +509,7 @@ class JointTemperature(SubDevice):
     - its motor model
     - its ambiant temperature
     """
+
     def __init__(self, dcm, mem, short_name):
         SubDevice.__init__(self, dcm, mem, short_name)
         self.short_name = short_name
@@ -604,11 +624,15 @@ class JointTemperature(SubDevice):
         _set_winding_resistance)
 
 # Wheels classes
+
+
 class WheelSpeedActuator(SubDevice):
+
     """
     Describes wheels speed actuator.
     ShortName can be in ["WheelFR","WheelFL","WheelB"].
     """
+
     def __init__(self, dcm, mem, short_name):
         SubDevice.__init__(self, dcm, mem, short_name)
         self.short_name = short_name
@@ -674,7 +698,7 @@ class WheelSpeedActuator(SubDevice):
     invert_control_direction = property(
         _get_invert_control_direction,
         _set_invert_control_direction
-        )
+    )
     k_d = property(_get_k_d, _set_k_d)
     k_i = property(_get_k_i, _set_k_i)
     k_p = property(_get_k_p, _set_k_p)
@@ -687,27 +711,31 @@ class WheelSpeedActuator(SubDevice):
         [ta, tv] must be given in milliseconds.
         """
         if sens == "positive":
-            speed_command = max_speed_proportion*self.maximum
+            speed_command = max_speed_proportion * self.maximum
         else:
-            speed_command = max_speed_proportion*self.minimum
+            speed_command = max_speed_proportion * self.minimum
         # defining the trapeze
         self.value = [[[speed_command, self.dcm.getTime(ta)]], "ClearAll"]
-        self.value = [[[speed_command, self.dcm.getTime(ta+tv)]], "Merge"]
-        self.value = [[[0.0, self.dcm.getTime(2*ta+tv)]], "Merge"]
+        self.value = [[[speed_command, self.dcm.getTime(ta + tv)]], "Merge"]
+        self.value = [[[0.0, self.dcm.getTime(2 * ta + tv)]], "Merge"]
         if second_invert_trapeze is True:
-            offset = 2*ta+tv
+            offset = 2 * ta + tv
             self.value = \
-            [[[-speed_command, self.dcm.getTime(offset+ta)]], "Merge"]
+                [[[-speed_command, self.dcm.getTime(offset + ta)]], "Merge"]
             self.value = \
-            [[[-speed_command, self.dcm.getTime(offset+ta+tv)]], "Merge"]
+                [[[-speed_command, self.dcm.getTime(
+                    offset + ta + tv)]], "Merge"]
             self.value = \
-            [[[0.0, self.dcm.getTime(2*offset)]], "Merge"]
+                [[[0.0, self.dcm.getTime(2 * offset)]], "Merge"]
+
 
 class WheelSpeedSensor(SubDevice):
+
     """
     Describes wheels speed sensor.
     ShortName can be in ["WheelFR","WheelFL","WheelB"].
     """
+
     def __init__(self, dcm, mem, short_name):
         SubDevice.__init__(self, dcm, mem, short_name)
         self.short_name = short_name
@@ -774,11 +802,14 @@ class WheelSpeedSensor(SubDevice):
         _get_position_chain_mre_motor,
         _set_position_chain_mre_motor)
 
+
 class WheelTemperatureSensor(SubDevice):
+
     """
     Describes wheels speed actuator.
     ShortName must be in ["WheelFR","WheelFL","WheelB"].
     """
+
     def __init__(self, dcm, mem, short_name):
         SubDevice.__init__(self, dcm, mem, short_name)
         self.short_name = short_name
@@ -891,12 +922,15 @@ class WheelTemperatureSensor(SubDevice):
         _get_winding_resistance,
         _set_winding_resistance)
 
+
 class WheelStiffnessActuator(SubDevice):
+
     """
     Class which defines a wheel stiffness characterized by :
     - its stiffness decrease rate
     ShortName must be in ["WheelFR","WheelFL","WheelB"].
     """
+
     def __init__(self, dcm, mem, short_name):
         SubDevice.__init__(self, dcm, mem, short_name)
         self.short_name = short_name
@@ -914,12 +948,15 @@ class WheelStiffnessActuator(SubDevice):
         _get_stiffness_decrease_rate,
         _set_stiffness_decrease_rate)
 
+
 class WheelCurrentSensor(SubDevice):
+
     """
     Class which defines a wheel characterized by :
     - its current type
     - its shunt resistance
     """
+
     def __init__(self, dcm, mem, short_name):
         SubDevice.__init__(self, dcm, mem, short_name)
         self.short_name = short_name
@@ -944,12 +981,15 @@ class WheelCurrentSensor(SubDevice):
     current_type = property(_get_current_type, _set_current_type)
     shunt_resistance = property(_get_shunt_resistance, _set_shunt_resistance)
 
+
 class WheelsMotion(object):
+
     """Wheels control class."""
-    def __init__(self, dcm, mem, max_speed_proportion):
+
+    def __init__(self, dcm, mem, vmax):
         self.dcm = dcm
         self.mem = mem
-        self.max_speed_proportion = max_speed_proportion
+        self.vmax = vmax
 
         self.wheelfr_speed_actuator = WheelSpeedActuator(dcm, mem, "WheelFR")
         self.wheelfl_speed_actuator = WheelSpeedActuator(dcm, mem, "WheelFL")
@@ -957,8 +997,8 @@ class WheelsMotion(object):
 
         self.r_roue = 0.07  #m
         self.r_cercle = 0.1762  #m
-        self.angle_wheels_robot = 0.49562289301808176428859739121848 #rad - absolute angle between front wheels x axes and robot x axis = rad(90°-(123.2058°/2)) . 
-                                                                     # 123.2058° is the angle between the y axis of the two front wheels (Doc Pepper). 
+        self.angle_wheels_robot = 0.49562289301808176428859739121848 #rad - absolute angle between front wheels x axes and robot x axis = rad(90°-(123.2058°/2)) .
+                                                                     # 123.2058° is the angle between the y axis of the two front wheels (Doc Pepper).
 
         self.gamma_a = 0.2  #m.s-2
         self.gamma_f = 0.2  #m.s-2
@@ -966,20 +1006,20 @@ class WheelsMotion(object):
         self.max_speed_proportion*self.wheelb_speed_actuator.maximum  #rad/s
         self.vmax = self.r_roue * self.speed * cos(self.angle_wheels_robot) #m/s
 
-        self.t_a = self.vmax / self.gamma_a  #s
-        self.t_f = self.vmax / self.gamma_f  #s
+        self.t_a = self.vmax / self.gamma_a  # s
+        self.t_f = self.vmax / self.gamma_f  # s
 
     def stiff_wheels(self, wheels_list, value):
         """Set stiffness to 1.0 for wheel names in wheels_list."""
         for wheel_name in wheels_list:
             wheel_stiff_act = \
-            WheelStiffnessActuator(self.dcm, self.mem, wheel_name)
+                WheelStiffnessActuator(self.dcm, self.mem, wheel_name)
             wheel_stiff_act.qvalue = (value, 0.0)
 
     def move_x(self, distance, wait=True):
         """The robot goes forward for 'distance' meters"""
-        t_v = (abs(distance) - (0.5*self.gamma_a*self.t_a*self.t_a) - \
-            (0.5*self.gamma_f*self.t_f*self.t_f)) / self.vmax
+        t_v = (abs(distance) - (0.5 * self.gamma_a * self.t_a * self.t_a) -
+              (0.5 * self.gamma_f * self.t_f * self.t_f)) / self.vmax
         if t_v <= 0:
             print "temps a vitesse constante nul"
         else:
@@ -996,27 +1036,27 @@ class WheelsMotion(object):
 
             timed_commands_wheelfr = [
                 (0.0, 0),
-                (-speed, 1000*t1),
-                (-speed, 1000*t2),
-                (0.0, 1000*t3)]
+                (-speed, 1000 * t1),
+                (-speed, 1000 * t2),
+                (0.0, 1000 * t3)]
 
             timed_commands_wheelfl = [
                 (0.0, 0),
-                (speed, 1000*t1),
-                (speed, 1000*t2),
-                (0.0, 1000*t3)]
+                (speed, 1000 * t1),
+                (speed, 1000 * t2),
+                (0.0, 1000 * t3)]
 
             self.wheelfr_speed_actuator.mqvalue = timed_commands_wheelfr
             self.wheelfl_speed_actuator.mqvalue = timed_commands_wheelfl
 
             if wait:
-                tools.wait(self.dcm, 1000*t3)
+                tools.wait(self.dcm, 1000 * t3)
                 self.stiff_wheels(["WheelFR", "WheelFL"], 0.0)
 
     def move_y(self, distance, wait=True):
         """The robot goes forward for 'distance' meters"""
-        t_v = (abs(distance) - (0.5*self.gamma_a*self.t_a*self.t_a) - \
-            (0.5*self.gamma_f*self.t_f*self.t_f)) / self.vmax
+        t_v = (abs(distance) - (0.5 * self.gamma_a * self.t_a * self.t_a) -
+              (0.5 * self.gamma_f * self.t_f * self.t_f)) / self.vmax
         if t_v <= 0:
             print "temps a vitesse constante nul"
         else:
@@ -1031,34 +1071,34 @@ class WheelsMotion(object):
 
             timed_commands_wheelfr = [
                 (0.0, 0),
-                (-0.5*self.speed, 1000*t1),
-                (-0.5*self.speed, 1000*t2),
-                (0.0, 1000*t3)]
+                (-0.5 * self.speed, 1000 * t1),
+                (-0.5 * self.speed, 1000 * t2),
+                (0.0, 1000 * t3)]
 
             timed_commands_wheelfl = [
                 (0.0, 0),
-                (-0.5*self.speed, 1000*t1),
-                (-0.5*self.speed, 1000*t2),
-                (0.0, 1000*t3)]
+                (-0.5 * self.speed, 1000 * t1),
+                (-0.5 * self.speed, 1000 * t2),
+                (0.0, 1000 * t3)]
 
             timed_commands_wheelb = [
                 (0.0, 0),
-                (self.speed, 1000*t1),
-                (self.speed, 1000*t2),
-                (0.0, 1000*t3)]
+                (self.speed, 1000 * t1),
+                (self.speed, 1000 * t2),
+                (0.0, 1000 * t3)]
 
             self.wheelfr_speed_actuator.mqvalue = timed_commands_wheelfr
             self.wheelfl_speed_actuator.mqvalue = timed_commands_wheelfl
             self.wheelb_speed_actuator.mqvalue = timed_commands_wheelb
 
             if wait:
-                tools.wait(self.dcm, 1000*t3)
+                tools.wait(self.dcm, 1000 * t3)
                 self.stiff_wheels(["WheelFR", "WheelFL", "WheelB"], 0.0)
 
     def rotate(self, nb_tour, wait=True):
-        theta_tot = (self.r_cercle/self.r_roue)*2*pi*nb_tour
-        t_v = (abs(theta_tot) - (0.5*self.gamma_a*self.t_a*self.t_a) -\
-            (0.5*self.gamma_f*self.t_f*self.t_f)) / self.speed
+        theta_tot = (self.r_cercle / self.r_roue) * 2 * pi * nb_tour
+        t_v = (abs(theta_tot) - (0.5 * self.gamma_a * self.t_a * self.t_a) -
+              (0.5 * self.gamma_f * self.t_f * self.t_f)) / self.speed
 
         if t_v <= 0:
             print "temps a vitesse constante nul"
@@ -1074,24 +1114,26 @@ class WheelsMotion(object):
 
             timed_commands = [
                 (0.0, 0),
-                (self.speed, 1000*t1),
-                (self.speed, 1000*t2),
-                (0.0, 1000*t3)]
+                (self.speed, 1000 * t1),
+                (self.speed, 1000 * t2),
+                (0.0, 1000 * t3)]
 
             self.wheelfr_speed_actuator.mqvalue = timed_commands
             self.wheelfl_speed_actuator.mqvalue = timed_commands
             self.wheelb_speed_actuator.mqvalue = timed_commands
 
             if wait:
-                tools.wait(self.dcm, 1000*t3)
+                tools.wait(self.dcm, 1000 * t3)
                 self.stiff_wheels(["WheelFR", "WheelFL", "WheelB"], 0.0)
 
 
 class Switch(SubDevice):
+
     """
     Class which defines a switch hardness characterized by:
     - the sub-device only
     """
+
     def __init__(self, dcm, mem, short_name):
         SubDevice.__init__(self, dcm, mem, short_name)
         self.short_name = short_name
@@ -1101,15 +1143,21 @@ class Switch(SubDevice):
         else:
             self.name = short_name + "/Sensor"
 
+
 class Touch(SubDevice):
+
     """To commment."""
+
     def __init__(self, dcm, mem, short_name):
         SubDevice.__init__(self, dcm, mem, short_name)
         self.short_name = short_name
         self.name = short_name + "/Sensor"
 
+
 class Led(SubDevice):
+
     """Class which describes a Led for NAO robot."""
+
     def __init__(self, dcm, mem, short_name):
         SubDevice.__init__(self, dcm, mem, short_name)
         self.short_name = short_name
@@ -1127,17 +1175,19 @@ class Led(SubDevice):
             "Red",
             "Green",
             "Blue"
-            )
+        )
         led_pos = tools.read_int_tuple(
             "Configuration/leds.cfg",
             "LEDPos",
             led_pos_name
-            )
+        )
         return led_pos
 
 
 class FSR(SubDevice):
+
     """Class which describes FSR parameters for NAO robot."""
+
     def __init__(self, dcm, mem, short_name):
         SubDevice.__init__(self, dcm, mem, short_name)
         self.short_name = short_name
@@ -1162,31 +1212,40 @@ class FSR(SubDevice):
     xPosition = property(_get_x_position, _set_x_position)
     yPosition = property(_get_y_position, _set_y_position)
 
+
 class CenterOfPressure(SubDevice):
+
     """
     Class for NAO robot.
     Class which describes centre of pressure for NAO robot.
     """
+
     def __init__(self, dcm, mem, short_name):
         SubDevice.__init__(self, dcm, mem, short_name)
         self.short_name = short_name
         self.name = short_name + "/Sensor"
 
+
 class TotalWeight(SubDevice):
+
     """
     Class for NAO robot.
     Class which describes total weight.
     """
+
     def __init__(self, dcm, mem, short_name):
         SubDevice.__init__(self, dcm, mem, short_name)
         self.short_name = short_name
         self.name = short_name + "/Sensor"
 
+
 class Inertial(SubDevice):
+
     """
     Class for NAO robot.
     It describes inertial sensor.
     """
+
     def __init__(self, dcm, mem, short_name):
         SubDevice.__init__(self, dcm, mem, short_name)
         self.short_name = short_name
@@ -1203,27 +1262,35 @@ class Inertial(SubDevice):
 
 # MultifuseBoard classes
 
+
 class MultiFuseBoardAmbiantTemperature(SubDevice):
+
     """
     Class for JULIETTE robot.
     It describes the ambiant temperature sensor linked to the MultiFuseBoard.
     """
+
     def __init__(self, dcm, mem, short_name="MultiFuseBoard"):
         SubDevice.__init__(self, dcm, mem, short_name)
         self.name = short_name + "/AmbiantTemperature/Sensor"
         self.header_name = "MultifuseBoard_Ambiant_Temperature"
 
+
 class MultiFuseBoardTotalCurrent(SubDevice):
+
     """
     Class for JULIETTE robot.
     It describes the total current into the MultiFuseBoard device.
     """
+
     def __init__(self, dcm, mem, short_name="MultiFuseBoard"):
         SubDevice.__init__(self, dcm, mem, short_name)
         self.name = short_name + "/CurrentTotal/Sensor"
         self.header_name = "MultifuseBoard_Total_Current"
 
+
 class FuseTemperature(SubDevice):
+
     """
     Class for JULIETTE robot.
     It describes the fuse temperature.
@@ -1236,6 +1303,7 @@ class FuseTemperature(SubDevice):
     [Object creation example]
     fuseTemperature = FuseTemperature(dcm, mem, "UR")
     """
+
     def __init__(self, dcm, mem, part):
         self.short_name = "MultiFuseBoard"
         self.physical_quantity = "Temperature"
@@ -1248,7 +1316,7 @@ class FuseTemperature(SubDevice):
                 str(self.part),
                 str(self.physical_quantity)
             ]
-            )
+        )
 
     def _get_status(self):
         """Get fuse temperature status."""
@@ -1260,7 +1328,9 @@ class FuseTemperature(SubDevice):
 
     status = property(_get_status, _set_status)
 
+
 class FuseCurrent(SubDevice):
+
     """
     Class for JULIETTE robot.
     It describes the fuse current.
@@ -1273,6 +1343,7 @@ class FuseCurrent(SubDevice):
     [Object creation example]
     fuseCurrent = FuseCurrent(dcm, mem, "UN")
     """
+
     def __init__(self, dcm, mem, part):
         self.short_name = "MultiFuseBoard"
         self.physical_quantity = "Current"
@@ -1285,9 +1356,11 @@ class FuseCurrent(SubDevice):
                 str(self.part),
                 str(self.physical_quantity)
             ]
-            )
+        )
+
 
 class FuseVoltage(SubDevice):
+
     """
     Class for JULIETTE robot.
     It describes the fuse current.
@@ -1300,6 +1373,7 @@ class FuseVoltage(SubDevice):
     [Object creation example]
     fuseVoltage = FuseVoltage(dcm, mem, "DW")
     """
+
     def __init__(self, dcm, mem, part):
         self.short_name = "MultiFuseBoard"
         self.physical_quantity = "Voltage"
@@ -1312,9 +1386,11 @@ class FuseVoltage(SubDevice):
                 str(self.part),
                 str(self.physical_quantity)
             ]
-            )
+        )
+
 
 class FuseResistor(SubDevice):
+
     """
     Class for JULIETTE robot.
     It describes the fuse current.
@@ -1327,6 +1403,7 @@ class FuseResistor(SubDevice):
     [Object creation example]
     fuseResistor = FuseResistor(dcm, mem, "UN")
     """
+
     def __init__(self, dcm, mem, part):
         self.short_name = "MultiFuseBoard"
         SubDevice.__init__(self, dcm, mem, self.short_name)
@@ -1335,19 +1412,24 @@ class FuseResistor(SubDevice):
 
 # Fan classes
 
+
 class FanHardnessActuator(SubDevice):
+
     """
     Class for JULIETTE robot.
     It describes fanboard actuator.
     [Object creation example]
     fanHardnessActuator = FanHardnessActuator(dcm, mem)
     """
+
     def __init__(self, dcm, mem):
         self.short_name = "FanBoard"
         SubDevice.__init__(self, dcm, mem, self.short_name)
         self.name = self.short_name + "/Hardness/Actuator"
 
+
 class FanFrequencySensor(SubDevice):
+
     """
     Class for JULIETTE robot.
     It describes the fans frequency sensors.
@@ -1358,19 +1440,23 @@ class FanFrequencySensor(SubDevice):
     [Object creation example]
     fanFrequencySensor = FanFrequencySensor(dcm, mem, "Right")
     """
+
     def __init__(self, dcm, mem, part):
         self.short_name = "FanBoard"
         SubDevice.__init__(self, dcm, mem, self.short_name)
         self.part = part
         self.name = self.short_name + "/Frequency" + self.part + "/Sensor"
 
+
 class FanStatus(SubDevice):
+
     """
     Class for JULIETTE robot.
     It describes fan status.
     [Object creation example]
     fanStatus = FanStatus(dcm, mem)
     """
+
     def __init__(self, dcm, mem):
         self.short_name = "FanBoard"
         SubDevice.__init__(self, dcm, mem, self.short_name)
@@ -1386,25 +1472,54 @@ class FanStatus(SubDevice):
 
     status = property(_get_status, _set_status)
 
+
 class Laser(SubDevice):
+
     """
     Class for JULIETTE robot.
     It describes laser sensor.
     [Object creation example]
     laser = Laser(dcm, mem, "Front/Horizontal/Seg01/X/Sensor")
     """
+
     def __init__(self, dcm, mem, key):
         SubDevice.__init__(self, dcm, mem, key)
         self.name = "Platform/LaserSensor/" + key
 
+
 class Bumper(SubDevice):
+
     """
     Class for JULIETTE robot.
     It describes bumpers sensors.
     [Object creation example]
     bumper = Bumper(dcm, mem, "Back")
     """
+
     def __init__(self, dcm, mem, key):
         SubDevice.__init__(self, dcm, mem, key)
         self.name = "Platform/" + key + "/Bumper/Sensor"
 
+
+class ChargingStationSensor(SubDevice):
+
+    """
+    Class for JULIETTE robot.
+    """
+
+    def __init__(self, dcm, mem, short_name="Platform"):
+        self.short_name = short_name
+        SubDevice.__init__(self, dcm, mem, self.short_name)
+        self.name = self.short_name + "/RobotOnChargingStation/Sensor"
+
+
+class BatteryCurrentSensor(SubDevice):
+
+    """
+    Class for JULIETTE robot.
+    """
+
+    def __init__(self, dcm, mem, short_name="Battery"):
+        self.short_name = short_name
+        SubDevice.__init__(self, dcm, mem, self.short_name)
+        self.name = self.short_name + "/Current/Sensor"
