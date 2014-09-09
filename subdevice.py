@@ -995,16 +995,29 @@ class WheelsMotion(object):
         self.wheelfl_speed_actuator = WheelSpeedActuator(dcm, mem, "WheelFL")
         self.wheelb_speed_actuator = WheelSpeedActuator(dcm, mem, "WheelB")
 
-        self.r_roue = 0.07  #m
-        self.r_cercle = 0.1762  #m
-        self.angle_wheels_robot = 0.49562289301808176428859739121848 #rad - absolute angle between front wheels x axes and robot x axis = rad(90°-(123.2058°/2)) .
-                                                                     # 123.2058° is the angle between the y axis of the two front wheels (Doc Pepper).
-
-        self.gamma_a = 0.2  #m.s-2
-        self.gamma_f = 0.2  #m.s-2
+        self.r_roue = 0.07  # m
+        self.r_cercle = 0.1762  # m
+        # rad - absolute angle between front wheels x axes and robot x axis =
+        # rad(90°-(123.2058°/2)) .
+        self.angle_wheels_robot = 0.49562289301808176428859739121848
+                                                                     # 123.2058°
+                                                                     # is the
+                                                                     # angle
+                                                                     # between
+                                                                     # the y
+                                                                     # axis of
+                                                                     # the two
+                                                                     # front
+                                                                     # wheels
+                                                                     # (Doc
+                                                                     # Pepper).
+        self.gamma_a = 0.2  # m.s-2
+        self.gamma_f = 0.2  # m.s-2
         self.speed = \
-        self.max_speed_proportion*self.wheelb_speed_actuator.maximum  #rad/s
-        self.vmax = self.r_roue * self.speed * cos(self.angle_wheels_robot) #m/s
+            self.max_speed_proportion * \
+            self.wheelb_speed_actuator.maximum  # rad/s
+        self.vmax = self.r_roue * self.speed * \
+            cos(self.angle_wheels_robot)  # m/s
 
         self.t_a = self.vmax / self.gamma_a  # s
         self.t_f = self.vmax / self.gamma_f  # s
@@ -1424,6 +1437,7 @@ class FanHardnessActuator(SubDevice):
 
     def __init__(self, dcm, mem):
         self.short_name = "FanBoard"
+        self.header_name = self.short_name + "ActuatorValue"
         SubDevice.__init__(self, dcm, mem, self.short_name)
         self.name = self.short_name + "/Hardness/Actuator"
 
@@ -1445,6 +1459,7 @@ class FanFrequencySensor(SubDevice):
         self.short_name = "FanBoard"
         SubDevice.__init__(self, dcm, mem, self.short_name)
         self.part = part
+        self.header_name = self.part + "FanFrequency"
         self.name = self.short_name + "/Frequency" + self.part + "/Sensor"
 
 
@@ -1461,6 +1476,7 @@ class FanStatus(SubDevice):
         self.short_name = "FanBoard"
         SubDevice.__init__(self, dcm, mem, self.short_name)
         self.name = self.short_name + "/Fan"
+        self.header_name = "FanStatus"
 
     def _get_status(self):
         """Get fan status."""
