@@ -1539,3 +1539,209 @@ class BatteryCurrentSensor(SubDevice):
         self.short_name = short_name
         SubDevice.__init__(self, dcm, mem, self.short_name)
         self.name = self.short_name + "/Current/Sensor"
+
+
+class BatteryChargeSensor(SubDevice):
+
+    """
+    Class for JULIETTE robot with VARTA battery.
+    It describes the battery charge sensor.
+    """
+
+    def __init__(self, dcm, mem):
+        self.short_name = "Battery"
+        SubDevice.__init__(self, dcm, mem, self.short_name)
+        self.name = self.short_name + "/Charge/Sensor"
+
+    def _get_age(self):
+        """Get subdevice's age from ALMemory."""
+        return self.get("Age")
+
+    def _set_age(self, request):
+        """Set subdevice's age"""
+        self.set("Age", request[0], request[1])
+
+    def _get_average_current(self):
+        """Get subdevice's average_current from ALMemory."""
+        return self.get("AverageCurrent")
+
+    def _set_average_current(self, request):
+        """Set subdevice's average_current"""
+        self.set("AverageCurrent", request[0], request[1])
+
+    def _get_battery_low(self):
+        """Get subdevice's battery low indication from ALMemory."""
+        return self.get("BatteryLow")
+
+    def _set_battery_low(self, request):
+        """Set subdevice's battery low indication"""
+        self.set("BatteryLow", request[0], request[1])
+
+    def _get_cedv(self):
+        """Get subdevice's cedv from ALMemory."""
+        return self.get("CEDV")
+
+    def _set_cedv(self, request):
+        """Set subdevice's cedv"""
+        self.set("CEDV", request[0], request[1])
+
+    def _get_cell_count(self):
+        """Get subdevice's cell count from ALMemory."""
+        return self.get("CellCount")
+
+    def _set_cell_count(self, request):
+        """Set subdevice's cell count"""
+        self.set("CellCount", request[0], request[1])
+
+    def _get_cell_value(self):
+        """Get subdevice's cell value from ALMemory."""
+        return self.get("CellValue")
+
+    def _set_cell_value(self, request):
+        """Set subdevice's cell value"""
+        self.set("CellValue", request[0], request[1])
+
+    def _get_cell_voltage_max(self):
+        """Get subdevice's cell voltage max from ALMemory."""
+        return self.get("CellVoltageMax")
+
+    def _set_cell_voltage_max(self, request):
+        """Set subdevice's cell voltage max"""
+        self.set("CellVoltageMax", request[0], request[1])
+
+    def _get_cell_voltage_min(self):
+        """Get subdevice's cell voltage min from ALMemory."""
+        return self.get("CellVoltageMin")
+
+    def _set_cell_voltage_min(self, request):
+        """Set subdevice's cell voltage min"""
+        self.set("CellVoltageMin", request[0], request[1])
+
+    def _get_charge(self):
+        """Get subdevice's charge from ALMemory."""
+        return self.get("Charge")
+
+    def _set_charge(self, request):
+        """Set subdevice's charge"""
+        self.set("Charge", request[0], request[1])
+
+    def _get_charging(self):
+        """Get subdevice's charging indication from ALMemory."""
+        return self.get("Charging")
+
+    def _set_charging(self, request):
+        """Set subdevice's charging indication"""
+        self.set("Charging", request[0], request[1])
+
+    def _get_cycle_count(self):
+        """Get subdevice's cycles count from ALMemory."""
+        return self.get("CyclesCount")
+
+    def _set_cycle_count(self, request):
+        """Set subdevice's cycles count"""
+        self.set("CyclesCount", request[0], request[1])
+
+    def _get_end_of_life(self):
+        """Get subdevice's end of life from ALMemory."""
+        return self.get("EndOfLife")
+
+    def _set_end_of_life(self, request):
+        """Set subdevice's end of life"""
+        self.set("EndOfLife", request[0], request[1])
+
+    def _get_flags(self):
+        """Get subdevice's flags from ALMemory."""
+        return self.get("Flags")
+
+    def _set_flags(self, request):
+        """Set subdevice's flags"""
+        self.set("Flags", request[0], request[1])
+
+    def _get_full_charge_capacity(self):
+        """Get subdevice's full charge capacity from ALMemory."""
+        return self.get("FullChargeCapacity")
+
+    def _set_full_charge_capacity(self, request):
+        """Set subdevice's full charge capacity"""
+        self.set("FullChargeCapacity", request[0], request[1])
+
+    def _get_remaining_capacity(self):
+        """Get subdevice's remaining capacity from ALMemory."""
+        return self.get("RemainingCapacity")
+
+    def _set_remaining_capacity(self, request):
+        """Set subdevice's remaining capacity"""
+        self.set("RemainingCapacity", request[0], request[1])
+
+    def _get_self_discharge_current(self):
+        """Get subdevice's self discharge current from ALMemory."""
+        return self.get("SelfDischargeCurrent")
+
+    def _set_self_discharge_current(self, request):
+        """Set subdevice's self discharge current"""
+        self.set("SelfDischargeCurrent", request[0], request[1])
+
+    def _get_state_of_health(self):
+        """Get subdevice's state of health from ALMemory."""
+        return self.get("StateOfHealth")
+
+    def _set_state_of_health(self, request):
+        """Set subdevice's state of health"""
+        self.set("StateOfHealth", request[0], request[1])
+
+    def _get_status(self):
+        """Get subdevice's status from ALMemory."""
+        return self.get("Status")
+
+    def _set_status(self, request):
+        """Set subdevice's status"""
+        self.set("Status", request[0], request[1])
+
+    def _get_time_to_empty(self):
+        """Get subdevice's TTE from ALMemory."""
+        return self.get("TimeToEmpty")
+
+    def _set_time_to_empty(self, request):
+        """Set subdevice's TTE"""
+        self.set("TimeToEmpty", request[0], request[1])
+
+    def _get_time_to_full(self):
+        """Get subdevice's TTF from ALMemory."""
+        return self.get("TimeToFull")
+
+    def _set_time_to_full(self, request):
+        """Set subdevice's TTF"""
+        self.set("TimeToFull", request[0], request[1])
+
+    def _get_total_voltage(self):
+        """Get subdevice's total voltage from ALMemory."""
+        return self.get("TotalVoltage")
+
+    def _set_total_voltage(self, request):
+        """Set subdevice's total voltage"""
+        self.set("TotalVoltage", request[0], request[1])
+
+    age = property(_get_age, _set_age)
+    average_current = property(_get_average_current, _set_average_current)
+    battery_low = property(_get_battery_low, _set_battery_low)
+    cedv = property(_get_cedv, _set_cedv)
+    cell_count = property(_get_cell_count, _set_cell_count)
+    cell_value = property(_get_cell_value, _set_cell_value)
+    cell_voltage_max = property(_get_cell_voltage_max, _set_cell_voltage_max)
+    cell_voltage_min = property(_get_cell_voltage_min, _set_cell_voltage_min)
+    charge = property(_get_charge, _set_charge)
+    charging = property(_get_charging, _set_charging)
+    cycle_count = property(_get_cycle_count, _set_cycle_count)
+    end_of_life = property(_get_end_of_life, _set_end_of_life)
+    flags = property(_get_flags, _set_flags)
+    full_charge_capacity = property(
+        _get_full_charge_capacity, _set_full_charge_capacity)
+    remaining_capacity = property(
+        _get_remaining_capacity, _set_remaining_capacity)
+    self_discharge_current = property(
+        _get_self_discharge_current, _set_self_discharge_current)
+    state_of_health = property(_get_state_of_health, _set_state_of_health)
+    status = property(_get_status, _set_status)
+    time_to_empty = property(_get_time_to_empty, _set_time_to_empty)
+    time_to_full = property(_get_time_to_full, _set_time_to_full)
+    total_voltage = property(_get_total_voltage, _set_total_voltage)
