@@ -998,9 +998,9 @@ class WheelsMotion(object):
         self.r_roue = 0.07  # m
         self.r_cercle = 0.1762  # m
         # rad - absolute angle between front wheels x axes and robot x axis =
-        # rad(90°-(123.2058°/2)) .
+        # rad(90-(123.2058/2)) .
         self.angle_wheels_robot = 0.49562289301808176428859739121848
-                                                                     # 123.2058°
+                                                                     # 123.2058
                                                                      # is the
                                                                      # angle
                                                                      # between
