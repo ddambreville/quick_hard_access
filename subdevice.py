@@ -1503,6 +1503,20 @@ class Laser(SubDevice):
         self.name = "Platform/LaserSensor/" + key
 
 
+class Sonar(SubDevice):
+
+    """
+    Class for JULIETTE robot.
+    It describes sonar sensor.
+    [Object creation example]
+    sonar = Sonar(dcm, mem, "Front")
+    """
+
+    def __init__(self, dcm, mem, key):
+        SubDevice.__init__(self, dcm, mem, key)
+        self.name = "Platform/" + key + "/Sonar/Sensor"
+
+
 class Bumper(SubDevice):
 
     """
