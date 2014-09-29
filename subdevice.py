@@ -1014,7 +1014,6 @@ class WheelsMotion(object):
         self.gamma_a = 0.2  # m.s-2
         self.gamma_f = 0.2  # m.s-2
         self.speed = self.vmax * cos(self.angle_wheels_robot) / self.r_roue
-
         self.t_a = self.vmax / self.gamma_a  # s
         self.t_f = self.vmax / self.gamma_f  # s
 
@@ -1497,6 +1496,20 @@ class Laser(SubDevice):
     def __init__(self, dcm, mem, key):
         SubDevice.__init__(self, dcm, mem, key)
         self.name = "Platform/LaserSensor/" + key
+
+
+class InertialSensorBase(SubDevice):
+
+    """
+    Class for JULIETTE robot.
+    It describes InertialSensorBase sensor.
+    [Object creation example]
+    inertial_sensor_base = InertialSensorBase(dcm, mem, "AngleX")
+    """
+
+    def __init__(self, dcm, mem, key):
+        SubDevice.__init__(self, dcm, mem, key)
+        self.name = "InertialSensorBase/" + key + "/Sensor"
 
 
 class Sonar(SubDevice):
