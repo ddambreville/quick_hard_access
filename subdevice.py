@@ -16,7 +16,7 @@ The following classes have been added
 - FanStatus
 '''
 
-import tools
+import qha_tools
 from math import pi, cos
 
 
@@ -59,7 +59,7 @@ def multiple_set(dcm, mem, datas, update_type="ClearAll", wait=False):
     )
 
     if wait:
-        tools.wait(dcm, times[-1])
+        qha_tools.wait(dcm, times[-1])
 
 
 class SubDevice(object):
@@ -302,7 +302,7 @@ class JointPositionActuator(SubDevice):
         self.value = [[[position, self.dcm.getTime(time)]], update_type]
 
         if wait:
-            tools.wait(dcm, time)
+            qha_tools.wait(dcm, time)
 
     def explore(self, time_to_go_limit, max_to_min=True):
         """
@@ -1058,7 +1058,7 @@ class WheelsMotion(object):
             self.wheelfl_speed_actuator.mqvalue = timed_commands_wheelfl
 
             if wait:
-                tools.wait(self.dcm, 1000 * t3)
+                qha_tools.wait(self.dcm, 1000 * t3)
                 self.stiff_wheels(["WheelFR", "WheelFL"], 0.0)
 
     def move_y(self, distance, wait=True):
@@ -1100,7 +1100,7 @@ class WheelsMotion(object):
             self.wheelb_speed_actuator.mqvalue = timed_commands_wheelb
 
             if wait:
-                tools.wait(self.dcm, 1000 * t3)
+                qha_tools.wait(self.dcm, 1000 * t3)
                 self.stiff_wheels(["WheelFR", "WheelFL", "WheelB"], 0.0)
 
     def rotate(self, nb_tour, wait=True):
@@ -1131,7 +1131,7 @@ class WheelsMotion(object):
             self.wheelb_speed_actuator.mqvalue = timed_commands
 
             if wait:
-                tools.wait(self.dcm, 1000 * t3)
+                qha_tools.wait(self.dcm, 1000 * t3)
                 self.stiff_wheels(["WheelFR", "WheelFL", "WheelB"], 0.0)
 
 
@@ -1176,7 +1176,7 @@ class Led(SubDevice):
         This method returns a tuple defining a box on camera picture where
         the led is located
         """
-        led_pos_name = tools.reduce_name(
+        led_pos_name = qha_tools.reduce_name(
             self.short_name,
             "/",
             "Led",
@@ -1184,7 +1184,7 @@ class Led(SubDevice):
             "Green",
             "Blue"
         )
-        led_pos = tools.read_int_tuple(
+        led_pos = qha_tools.read_int_tuple(
             "Configuration/leds.cfg",
             "LEDPos",
             led_pos_name
@@ -1258,7 +1258,7 @@ class Inertial(SubDevice):
         SubDevice.__init__(self, dcm, mem, short_name)
         self.short_name = short_name
 
-        self.sens_type = tools.reduce_name(
+        self.sens_type = qha_tools.reduce_name(
             self.short_name,
             "/",
             "InertialSensor")
