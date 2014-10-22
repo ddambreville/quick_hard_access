@@ -370,24 +370,45 @@ def case(*args):
     """case function"""
     return any((arg == switch.value for arg in args))
 
+
 class Queue:
+
+    """
+    Class which allows the creation of queues
+    """
+
     def __init__(self):
         self.items = []
 
-    def SetEmpty(self):
+    def set_empty(self):
+        """
+        Make the queue empty
+        """
         return self.items == []
 
-    def isEmpty(self):
-        if (len(self.items)==0):
+    def is_empty(self):
+        """
+        Allow to know if the queue is empty
+        """
+        if len(self.items == 0):
             return True
         else:
             return False
 
     def enqueue(self, item):
-        self.items.insert(0,item)
+        """
+        Insert a item in the queue
+        """
+        self.items.insert(0, item)
 
     def dequeue(self):
+        """
+        Get the oldest item of the queue
+        """
         return self.items.pop()
 
     def size(self):
+        """
+        Get the queue's size
+        """
         return len(self.items)
