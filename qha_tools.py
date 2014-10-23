@@ -412,3 +412,74 @@ class Queue:
         Get the queue's size
         """
         return len(self.items)
+
+
+class Bag(object):
+    def __init__(self, mem):
+        self.mem = mem
+        self.object_bag = {}
+        self.key_bag = {}
+
+    def add_object(self, object_name, object_to_add):
+        """Add an object to the bag."""
+        self.object_bag[object_name] = object_to_add
+        self.key_bag[object_name] = "".join([
+            object_to_add.prefix,
+            object_to_add.name])
+
+    def remove_object(self, object_name):
+        """Remove an object from the bag using its name."""
+        del self.object_bag[object_name]
+        del self.key_bag[object_name]
+
+    def get(self, request):
+        """Update values using getListData method from ALMemory."""
+        keys = ["/".join([key, request]) for key in self.key_bag.values()]
+        datas = self.mem.getListData(keys)
+        return dict(zip(self.key_bag.keys(), datas))
+
+    def _get_value(self):
+        """Get objects values."""
+        return self.get("Value")
+
+    def _get_device(self):
+        """Get objects device."""
+        return self.get("Device")
+
+    def _get_gain(self):
+        """Get objects gain."""
+        return self.get("Gain")
+
+    def _get_maximum(self):
+        """Get objects maximum."""
+        return self.get("Max")
+
+    def _get_minimum(self):
+        """Get objects minimum."""
+        return self.get("Min")
+
+    def _get_offset(self):
+        """Get objects offset."""
+        return self.get("Offset")
+
+    def _get_register(self):
+        """Get objects register."""
+        return self.get("Register")
+
+    def _get_subdevice_number(self):
+        """Get objects subdevice number."""
+        return self.get("SubDeviceNumber")
+
+    def _get_subdevice_type(self):
+        """Get objects subdevice type."""
+        return self.get("Type")
+
+    value = property(_get_value)
+    device = property(_get_device)
+    gain = property(_get_gain)
+    maximum = property(_get_maximum)
+    minimum = property(_get_minimum)
+    offset = property(_get_offset)
+    register = property(_get_register)
+    subdevice_number = property(_get_subdevice_number)
+    subdevice_type = property(_get_subdevice_type)
