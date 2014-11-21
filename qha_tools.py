@@ -58,7 +58,7 @@ def read_section(my_file, section):
     config.optionxform = str
     config.read(my_file)
 
-    if config.has_section(section):
+    try:
         config_section = config._sections[section]
         config_section.pop("__name__")
 
@@ -66,9 +66,8 @@ def read_section(my_file, section):
             config_section[key] = value.split()
 
         return config_section
-
-    else:
-        return {}
+    except:
+        raise NameError('incorrect config file path or section does not exist')
 
 
 def read_parameter(my_file, section, parameter):
