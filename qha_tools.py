@@ -38,18 +38,24 @@ def wait(dcm, time_to_wait):
 def use_section(my_file, section):
     """Use a section from a configuration file."""
     to_use = []
-
+    file_exist = os.path.exists(my_file)
     config = ConfigParser.ConfigParser()
     config.optionxform = str
-    config.read(my_file)
-    config_section = config._sections[section]
-    config_section.pop("__name__")
 
-    for key, value in config_section.items():
-        if value == "1":
-            to_use.append(key)
+    if file_exist:
+        config.read(my_file)
+        try:
+            config_section = config._sections[section]
+            config_section.pop("__name__")
 
-    return to_use
+            for key, value in config_section.items():
+                if value == "1":
+                    to_use.append(key)
+            return to_use
+        except:
+            raise NameError('Section <' + str(section) + '> does not exist')
+    else:
+        raise NameError('Configuration file does not exist')
 
 
 def read_section(my_file, section):
