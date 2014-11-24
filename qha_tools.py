@@ -56,18 +56,23 @@ def read_section(my_file, section):
     """Read section from a configuration file."""
     config = ConfigParser.ConfigParser()
     config.optionxform = str
-    config.read(my_file)
+    file_exist = os.path.exists(my_file)
 
-    try:
-        config_section = config._sections[section]
-        config_section.pop("__name__")
+    if file_exist:
+        config.read(my_file)
 
-        for key, value in config_section.items():
-            config_section[key] = value.split()
+        try:
+            config_section = config._sections[section]
+            config_section.pop("__name__")
 
-        return config_section
-    except:
-        raise NameError('incorrect config file path or section does not exist')
+            for key, value in config_section.items():
+                config_section[key] = value.split()
+
+            return config_section
+        except:
+            raise NameError('Section <' + str(section) + '> does not exist')
+    else:
+        raise NameError('Configuration file does not exist')
 
 
 def read_parameter(my_file, section, parameter):
