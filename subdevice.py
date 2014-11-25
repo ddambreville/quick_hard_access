@@ -1280,7 +1280,7 @@ class MultiFuseBoardAmbiantTemperature(SubDevice):
 
     def __init__(self, dcm, mem, short_name="MultiFuseBoard"):
         SubDevice.__init__(self, dcm, mem, short_name)
-        self.name = short_name + "/AmbiantTemperature/Sensor"
+        self.name = short_name + "/Ambiant/Temperature/Sensor"
         self.header_name = "MultifuseBoard_Ambiant_Temperature"
 
 
@@ -1293,38 +1293,53 @@ class MultiFuseBoardTotalCurrent(SubDevice):
 
     def __init__(self, dcm, mem, short_name="MultiFuseBoard"):
         SubDevice.__init__(self, dcm, mem, short_name)
-        self.name = short_name + "/CurrentTotal/Sensor"
+        self.name = short_name + "/AllFuse/Current/Sensor"
         self.header_name = "MultifuseBoard_Total_Current"
 
 
 class FuseTemperature(SubDevice):
 
     """
-    Class for JULIETTE robot.
-    It describes the fuse temperature.
-    Architecture scenario 4.
-    Part can be one of the following assembly:
-    - "UN" = Neck
-    - "UR" = Right Arm
-    - "UL" = Left Arm
-    - "DW" = Bottom
+    Class for JULIETTE robot which describes the fuse temperature.
+
+    Architecture scenario 4, part can be:
+    - HeadFuse
+    - LArmFuse
+    - RArmFuse
+    - LegFuse
+
     [Object creation example]
-    fuseTemperature = FuseTemperature(dcm, mem, "UR")
+    larm_fuse_temperature = FuseTemperature(dcm, mem, "LArmFuse")
     """
 
     def __init__(self, dcm, mem, part):
         self.short_name = "MultiFuseBoard"
         self.physical_quantity = "Temperature"
-        SubDevice.__init__(self, dcm, mem, self.short_name)
-        self.part = part
-        self.name = self.short_name + "/Temperature" + str(part) + "/Sensor"
-        self.header_name = "_".join(
-            [
-                "Fuse",
-                str(self.part),
-                str(self.physical_quantity)
-            ]
-        )
+
+        # Make sure that part name type is a string
+        if type(part) is not str:
+            raise TypeError("part argument must be a string")
+
+        # Make sure that part is a real HW part of the robot
+        if part in ("HeadFuse", "LArmFuse", "RArmFuse", "LegFuse"):
+            SubDevice.__init__(self, dcm, mem, self.short_name)
+            self.part = part
+
+            self.name = "/".join([
+                self.short_name,
+                str(part),
+                "Temperature",
+                "Sensor"
+                ])
+
+            self.header_name = "_".join(
+                [
+                    str(self.part),
+                    str(self.physical_quantity)
+                ]
+            )
+        else:
+            raise NameError("Incorrect part name : " + part)
 
     def _get_status(self):
         """Get fuse temperature status."""
@@ -1340,83 +1355,128 @@ class FuseTemperature(SubDevice):
 class FuseCurrent(SubDevice):
 
     """
-    Class for JULIETTE robot.
-    It describes the fuse current.
-    Architecture scenario 4.
-    part can be one of the following assembly:
-    - "UN" = Neck
-    - "UR" = Right Arm
-    - "UL" = Left Arm
-    - "DW" = Bottom
+    Class for JULIETTE robot which describes the fuse current.
+
+    Architecture scenario 4, part can be:
+    - HeadFuse
+    - LArmFuse
+    - RArmFuse
+    - LegFuse
+
     [Object creation example]
-    fuseCurrent = FuseCurrent(dcm, mem, "UN")
+    larm_fuse_current = FuseCurrent(dcm, mem, "LArmFuse")
     """
 
     def __init__(self, dcm, mem, part):
         self.short_name = "MultiFuseBoard"
         self.physical_quantity = "Current"
-        SubDevice.__init__(self, dcm, mem, self.short_name)
-        self.part = part
-        self.name = self.short_name + "/Current" + part + "/Sensor"
-        self.header_name = "_".join(
-            [
-                "Fuse",
-                str(self.part),
-                str(self.physical_quantity)
-            ]
-        )
+
+        # Make sure that part name type is a string
+        if type(part) is not str:
+            raise TypeError("part argument must be a string")
+
+        # Make sure that part is a real HW part of the robot
+        if part in ("HeadFuse", "LArmFuse", "RArmFuse", "LegFuse"):
+            SubDevice.__init__(self, dcm, mem, self.short_name)
+
+            self.name = "/".join([
+                self.short_name,
+                str(part),
+                "Current",
+                "Sensor"
+                ])
+
+            self.header_name = "_".join(
+                [
+                    str(part),
+                    str(self.physical_quantity)
+                ]
+            )
+        else:
+            raise NameError("Incorrect part name : " + part)
 
 
 class FuseVoltage(SubDevice):
 
     """
-    Class for JULIETTE robot.
-    It describes the fuse current.
-    Architecture scenario 4.
-    part can be one of the following assembly:
-    - "UN" = Neck
-    - "UR" = Right Arm
-    - "UL" = Left Arm
-    - "DW" = Bottom
+    Class for JULIETTE robot which describes the fuse voltage.
+
+    Architecture scenario 4, part can be:
+    - HeadFuse
+    - LArmFuse
+    - RArmFuse
+    - LegFuse
+
     [Object creation example]
-    fuseVoltage = FuseVoltage(dcm, mem, "DW")
+    larm_fuse_voltage = FuseVolatge(dcm, mem, "LArmFuse")
     """
 
     def __init__(self, dcm, mem, part):
         self.short_name = "MultiFuseBoard"
         self.physical_quantity = "Voltage"
-        SubDevice.__init__(self, dcm, mem, self.short_name)
-        self.part = part
-        self.name = self.short_name + "/Voltage" + part + "/Sensor"
-        self.header_name = "_".join(
-            [
-                "Fuse",
-                str(self.part),
-                str(self.physical_quantity)
-            ]
-        )
+
+        # Make sure that part name type is a string
+        if type(part) is not str:
+            raise TypeError("part argument must be a string")
+
+        # Make sure that part is a real HW part of the robot
+        if part in ("HeadFuse", "LArmFuse", "RArmFuse", "LegFuse"):
+            SubDevice.__init__(self, dcm, mem, self.short_name)
+            self.part = part
+
+            self.name = "/".join([
+                self.short_name,
+                str(part),
+                "Voltage",
+                "Sensor"
+                ])
+
+            self.header_name = "_".join(
+                [
+                    str(self.part),
+                    str(self.physical_quantity)
+                ]
+            )
+        else:
+            raise NameError("Incorrect part name : " + part)
 
 
 class FuseResistor(SubDevice):
 
     """
-    Class for JULIETTE robot.
-    It describes the fuse current.
-    Architecture scenario 4.
-    part can be one of the following assembly:
-    - "UN" = Neck
-    - "UR" = Right Arm
-    - "UL" = Left Arm
-    - "DW" = Bottom
+    Class for JULIETTE robot which describes the fuse resistor.
+
+    Architecture scenario 4, part can be:
+    - HeadFuse
+    - LArmFuse
+    - RArmFuse
+    - LegFuse
+
     [Object creation example]
-    fuseResistor = FuseResistor(dcm, mem, "UN")
+    larm_fuse_voltage = FuseResistor(dcm, mem, "LArmFuse")
     """
 
     def __init__(self, dcm, mem, part):
         self.short_name = "MultiFuseBoard"
-        SubDevice.__init__(self, dcm, mem, self.short_name)
-        self.part = part
-        self.name = self.short_name + "/Resistor" + part + "/Sensor"
+        self.physical_quantity = "Impedance"
+
+        # Make sure that part name type is a string
+        if type(part) is not str:
+            raise TypeError("part argument must be a string")
+
+        # Make sure that part is a real HW part of the robot
+        if part in ("HeadFuse", "LArmFuse", "RArmFuse", "LegFuse"):
+            SubDevice.__init__(self, dcm, mem, self.short_name)
+            self.name = "/".join([
+                self.short_name,
+                str(part),
+                "Resistor",
+                "Sensor"
+                ])
+        else:
+            raise NameError("Incorrect part name : " + part)
+
+
 
 # Fan classes
 
