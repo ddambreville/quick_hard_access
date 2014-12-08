@@ -1296,6 +1296,18 @@ class MultiFuseBoardTotalCurrent(SubDevice):
         self.name = short_name + "/AllFuse/Current/Sensor"
         self.header_name = "MultifuseBoard_Total_Current"
 
+class MultiFuseBoard(object):
+    """
+    Class for JULIETTE robot.
+    It describes MultifuseBoard scenario 4.
+    """
+    def __init__(self, dcm, mem):
+        self.dcm = dcm
+        self.mem = mem
+        self.total_current = MultiFuseBoardTotalCurrent(dcm, mem)
+        self.ambiant_temperature = MultiFuseBoardAmbiantTemperature(dcm, mem)
+
+
 
 class FuseTemperature(SubDevice):
 
@@ -1313,7 +1325,7 @@ class FuseTemperature(SubDevice):
     """
 
     def __init__(self, dcm, mem, part):
-        self.short_name = "MultiFuseBoard"
+        self.part = part
         self.physical_quantity = "Temperature"
 
         # Make sure that part name type is a string
@@ -1321,13 +1333,11 @@ class FuseTemperature(SubDevice):
             raise TypeError("part argument must be a string")
 
         # Make sure that part is a real HW part of the robot
-        if part in ("HeadFuse", "LArmFuse", "RArmFuse", "LegFuse"):
-            SubDevice.__init__(self, dcm, mem, self.short_name)
-            self.part = part
+        if self.part in ("HeadFuse", "LArmFuse", "RArmFuse", "LegFuse"):
+            SubDevice.__init__(self, dcm, mem, self.part)
 
             self.name = "/".join([
-                self.short_name,
-                str(part),
+                self.part,
                 "Temperature",
                 "Sensor"
                 ])
@@ -1368,7 +1378,7 @@ class FuseCurrent(SubDevice):
     """
 
     def __init__(self, dcm, mem, part):
-        self.short_name = "MultiFuseBoard"
+        self.part = part
         self.physical_quantity = "Current"
 
         # Make sure that part name type is a string
@@ -1376,19 +1386,18 @@ class FuseCurrent(SubDevice):
             raise TypeError("part argument must be a string")
 
         # Make sure that part is a real HW part of the robot
-        if part in ("HeadFuse", "LArmFuse", "RArmFuse", "LegFuse"):
-            SubDevice.__init__(self, dcm, mem, self.short_name)
+        if self.part in ("HeadFuse", "LArmFuse", "RArmFuse", "LegFuse"):
+            SubDevice.__init__(self, dcm, mem, self.part)
 
             self.name = "/".join([
-                self.short_name,
-                str(part),
+                self.part,
                 "Current",
                 "Sensor"
                 ])
 
             self.header_name = "_".join(
                 [
-                    str(part),
+                    self.part,
                     str(self.physical_quantity)
                 ]
             )
@@ -1408,11 +1417,11 @@ class FuseVoltage(SubDevice):
     - LegFuse
 
     [Object creation example]
-    larm_fuse_voltage = FuseVolatge(dcm, mem, "LArmFuse")
+    larm_fuse_voltage = FuseVoltage(dcm, mem, "LArmFuse")
     """
 
     def __init__(self, dcm, mem, part):
-        self.short_name = "MultiFuseBoard"
+        self.part = part
         self.physical_quantity = "Voltage"
 
         # Make sure that part name type is a string
@@ -1420,21 +1429,19 @@ class FuseVoltage(SubDevice):
             raise TypeError("part argument must be a string")
 
         # Make sure that part is a real HW part of the robot
-        if part in ("HeadFuse", "LArmFuse", "RArmFuse", "LegFuse"):
-            SubDevice.__init__(self, dcm, mem, self.short_name)
-            self.part = part
+        if self.part in ("HeadFuse", "LArmFuse", "RArmFuse", "LegFuse"):
+            SubDevice.__init__(self, dcm, mem, self.part)
 
             self.name = "/".join([
-                self.short_name,
-                str(part),
+                self.part,
                 "Voltage",
                 "Sensor"
                 ])
 
             self.header_name = "_".join(
                 [
-                    str(self.part),
-                    str(self.physical_quantity)
+                    self.part,
+                    self.physical_quantity
                 ]
             )
         else:
@@ -1457,7 +1464,7 @@ class FuseResistor(SubDevice):
     """
 
     def __init__(self, dcm, mem, part):
-        self.short_name = "MultiFuseBoard"
+        self.part = part
         self.physical_quantity = "Impedance"
 
         # Make sure that part name type is a string
@@ -1465,17 +1472,26 @@ class FuseResistor(SubDevice):
             raise TypeError("part argument must be a string")
 
         # Make sure that part is a real HW part of the robot
-        if part in ("HeadFuse", "LArmFuse", "RArmFuse", "LegFuse"):
-            SubDevice.__init__(self, dcm, mem, self.short_name)
+        if self.part in ("HeadFuse", "LArmFuse", "RArmFuse", "LegFuse"):
+            SubDevice.__init__(self, dcm, mem, self.part)
             self.name = "/".join([
-                self.short_name,
-                str(part),
+                self.part,
                 "Resistor",
                 "Sensor"
                 ])
         else:
             raise NameError("Incorrect part name : " + part)
 
+class Fuse(object):
+    """Class for JULIETTE robot which describes a fuse."""
+    def __init__(self, dcm, mem, part):
+        self.dcm = dcm
+        self.mem = mem
+        self.part = part
+        self.temperature = FuseTemperature(self.dcm, self.mem, self.part)
+        self.current = FuseCurrent(self.dcm, self.mem, self.part)
+        self.voltage = FuseVoltage(self.dcm, self.mem, self.part)
+        self.resistor = FuseResistor(self.dcm, self.mem, self.part)
 
 
 # Fan classes
