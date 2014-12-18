@@ -437,6 +437,28 @@ class JointPositionSensor(SubDevice):
         _set_position_chain_mre_motor)
 
 
+class JointPosition(object):
+    """Class which describes a joint position (actuator and sensor)"""
+    def __init__(self, dcm, mem, short_name):
+        self.dcm = dcm
+        self.mem = mem
+        self.short_name = short_name
+        self.actuator = \
+        JointPositionActuator(self.dcm, self.mem, self.short_name)
+        self.sensor = JointPositionSensor(self.dcm, self.mem, self.short_name)
+
+class Joint(object):
+    """Class which describes a joint."""
+    def __init__(self, dcm, mem, short_name):
+        self.dcm = dcm
+        self.mem = mem
+        self.short_name = short_name
+        self.position = JointPosition(self.dcm, self.mem, self.short_name)
+        self.temperature = JointTemperature(self.dcm, self.mem, self.short_name)
+        self.current = JointCurrentSensor(self.dcm, self.mem, self.short_name)
+        self.hardness = \
+        JointHardnessActuator(self.dcm, self.mem, self.short_name)
+
 class JointHardnessActuator(SubDevice):
 
     """
