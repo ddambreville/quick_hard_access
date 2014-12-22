@@ -1022,17 +1022,17 @@ class WheelsMotion(object):
         # rad - absolute angle between front wheels x axes and robot x axis =
         # rad(90-(123.2058/2)) .
         self.angle_wheels_robot = 0.49562289301808176428859739121848
-                                                                     # 123.2058
-                                                                     # is the
-                                                                     # angle
-                                                                     # between
-                                                                     # the y
-                                                                     # axis of
-                                                                     # the two
-                                                                     # front
-                                                                     # wheels
-                                                                     # (Doc
-                                                                     # Pepper).
+        # 123.2058
+        # is the
+        # angle
+        # between
+        # the y
+        # axis of
+        # the two
+        # front
+        # wheels
+        # (Doc
+        # Pepper).
         self.gamma_a = 0.2  # m.s-2
         self.gamma_f = 0.2  # m.s-2
         self.speed = self.vmax * cos(self.angle_wheels_robot) / self.r_roue
@@ -1049,7 +1049,7 @@ class WheelsMotion(object):
     def move_x(self, distance, wait=True):
         """The robot goes forward for 'distance' meters"""
         t_v = (abs(distance) - (0.5 * self.gamma_a * self.t_a * self.t_a) -
-              (0.5 * self.gamma_f * self.t_f * self.t_f)) / self.vmax
+               (0.5 * self.gamma_f * self.t_f * self.t_f)) / self.vmax
         if t_v <= 0:
             print "temps a vitesse constante nul"
         else:
@@ -1086,7 +1086,7 @@ class WheelsMotion(object):
     def move_y(self, distance, wait=True):
         """The robot goes forward for 'distance' meters"""
         t_v = (abs(distance) - (0.5 * self.gamma_a * self.t_a * self.t_a) -
-              (0.5 * self.gamma_f * self.t_f * self.t_f)) / self.vmax
+               (0.5 * self.gamma_f * self.t_f * self.t_f)) / self.vmax
         if t_v <= 0:
             print "temps a vitesse constante nul"
         else:
@@ -1128,7 +1128,7 @@ class WheelsMotion(object):
     def rotate(self, nb_tour, wait=True):
         theta_tot = (self.r_cercle / self.r_roue) * 2 * pi * nb_tour
         t_v = (abs(theta_tot) - (0.5 * self.gamma_a * self.t_a * self.t_a) -
-              (0.5 * self.gamma_f * self.t_f * self.t_f)) / self.speed
+               (0.5 * self.gamma_f * self.t_f * self.t_f)) / self.speed
 
         if t_v <= 0:
             print "temps a vitesse constante nul"
@@ -1318,17 +1318,19 @@ class MultiFuseBoardTotalCurrent(SubDevice):
         self.name = short_name + "/AllFuse/Current/Sensor"
         self.header_name = "MultifuseBoard_Total_Current"
 
+
 class MultiFuseBoard(object):
+
     """
     Class for JULIETTE robot.
     It describes MultifuseBoard scenario 4.
     """
+
     def __init__(self, dcm, mem):
         self.dcm = dcm
         self.mem = mem
         self.total_current = MultiFuseBoardTotalCurrent(dcm, mem)
         self.ambiant_temperature = MultiFuseBoardAmbiantTemperature(dcm, mem)
-
 
 
 class FuseTemperature(SubDevice):
@@ -1362,7 +1364,7 @@ class FuseTemperature(SubDevice):
                 self.part,
                 "Temperature",
                 "Sensor"
-                ])
+            ])
 
             self.header_name = "_".join(
                 [
@@ -1415,7 +1417,7 @@ class FuseCurrent(SubDevice):
                 self.part,
                 "Current",
                 "Sensor"
-                ])
+            ])
 
             self.header_name = "_".join(
                 [
@@ -1458,7 +1460,7 @@ class FuseVoltage(SubDevice):
                 self.part,
                 "Voltage",
                 "Sensor"
-                ])
+            ])
 
             self.header_name = "_".join(
                 [
@@ -1500,12 +1502,15 @@ class FuseResistor(SubDevice):
                 self.part,
                 "Resistor",
                 "Sensor"
-                ])
+            ])
         else:
             raise NameError("Incorrect part name : " + part)
 
+
 class Fuse(object):
+
     """Class for JULIETTE robot which describes a fuse."""
+
     def __init__(self, dcm, mem, part):
         self.dcm = dcm
         self.mem = mem
@@ -1866,3 +1871,16 @@ class BatteryChargeSensor(SubDevice):
     time_to_empty = property(_get_time_to_empty, _set_time_to_empty)
     time_to_full = property(_get_time_to_full, _set_time_to_full)
     total_voltage = property(_get_total_voltage, _set_total_voltage)
+
+
+class InfraredSpot(SubDevice):
+
+    """ Class for JULIETTE robot.
+    It described IR sensor.
+    [Object creation example]
+    ir_sensor = InfraredSpot(dcm, mem "Right")
+    """
+
+    def __init__(self, dcm, mem, key):
+        SubDevice.__init__(self, dcm, mem, key)
+        self.name = "Platform/InfraredSpot/" + key + "/Sensor"
