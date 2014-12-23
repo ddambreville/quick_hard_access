@@ -355,6 +355,13 @@ def stiff_joints(dcm, mem, joint_list):
         joint_hardness_act = subdevice.JointHardnessActuator(dcm, mem, joint)
         joint_hardness_act.qqvalue = 1.0
 
+def stiff_joints_proportion(dcm, mem, joint_list, proportion):
+    """Stiff joints in joint list."""
+    for joint in joint_list:
+        joint_hardness_act = subdevice.JointHardnessActuator(dcm, mem, joint)
+        if type(proportion) is not float:
+            raise TypeError("proportion must be a float")
+        joint_hardness_act.qqvalue = proportion
 
 def unstiff_joints(dcm, mem, joint_list):
     """Unstiff joints in joint list."""
