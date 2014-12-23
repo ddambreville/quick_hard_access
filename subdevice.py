@@ -1523,34 +1523,27 @@ class Fuse(object):
 
 # Fan classes
 
-
-class FanHardnessActuator(SubDevice):
-
+class FanBoardHardnessActuator(SubDevice):
     """
     Class for JULIETTE robot.
     It describes fanboard actuator.
-    [Object creation example]
-    fanHardnessActuator = FanHardnessActuator(dcm, mem)
     """
 
     def __init__(self, dcm, mem):
         self.short_name = "FanBoard"
-        self.header_name = self.short_name + "ActuatorValue"
+        self.header_name = self.short_name + "HardnessActuator"
         SubDevice.__init__(self, dcm, mem, self.short_name)
         self.name = self.short_name + "/Hardness/Actuator"
 
 
 class FanFrequencySensor(SubDevice):
-
     """
     Class for JULIETTE robot.
     It describes the fans frequency sensors.
     part can be one of the following assembly:
-    - "Right"
-    - "Mid"
-    - "Left"
-    [Object creation example]
-    fanFrequencySensor = FanFrequencySensor(dcm, mem, "Right")
+    - "FanRight"
+    - "FanCenter"
+    - "FanLeft"
     """
 
     def __init__(self, dcm, mem, part):
@@ -1558,16 +1551,13 @@ class FanFrequencySensor(SubDevice):
         SubDevice.__init__(self, dcm, mem, self.short_name)
         self.part = part
         self.header_name = self.part + "FanFrequency"
-        self.name = self.short_name + "/Frequency" + self.part + "/Sensor"
+        self.name = self.part + "/Frequency/Sensor"
 
 
-class FanStatus(SubDevice):
-
+class FanBoardFan(SubDevice):
     """
     Class for JULIETTE robot.
-    It describes fan status.
-    [Object creation example]
-    fanStatus = FanStatus(dcm, mem)
+    It describes fanboard fans.
     """
 
     def __init__(self, dcm, mem):
@@ -1585,6 +1575,29 @@ class FanStatus(SubDevice):
         self.set("Status", request[0], request[1])
 
     status = property(_get_status, _set_status)
+
+class Fans(object):
+    """
+    Class for Juliette robot.
+    It describes the robot fans.
+    [Object creation example]
+    fans = Fans(dcm, mem)
+    [1.] [Getter example] You want to know right fan frequency
+    right_fan_frequency = fans.rightfanfrequency.value
+    [2.] [Setter example] You want to turn on fans hardness now
+    fans.hardness.qqvalue = 1.0
+    """
+    def __init__(self, dcm, mem):
+        self.dcm = dcm
+        self.mem = mem
+        self.fan = FanBoardFan(self.dcm, self.mem)
+        self.hardness = FanBoardHardnessActuator(self.dcm, self.mem)
+        self.leftfanfrequency = \
+        FanFrequencySensor(self.dcm, self.mem, "FanLeft")
+        self.centerfanfrequency = \
+        FanFrequencySensor(self.dcm, self.mem, "FanCenter")
+        self.rightfanfrequency = \
+        FanFrequencySensor(self.dcm, self.mem, "FanRight")
 
 
 class Laser(SubDevice):
