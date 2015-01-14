@@ -647,6 +647,39 @@ class JointTemperature(SubDevice):
 
 # Wheels classes
 
+class Wheels(object):
+    """Class which describes Pepper wheels"""
+    def __init__(self, dcm, mem):
+        self.dcm = dcm
+        self.mem = mem
+        self.wheelb = Wheel(dcm, mem, "WheelB")
+        self.wheelfr = Wheel(dcm, mem, "WheelFR")
+        self.wheelfl = Wheel(dcm, mem, "WheelFL")
+
+
+class Wheel(object):
+    """Class which describes a wheel on Pepper robot."""
+    def __init__(self, dcm, mem, short_name):
+        self.dcm = dcm
+        self.mem = mem
+        self.short_name = short_name
+        self.speed = WheelSpeed(self.dcm, self.mem, self.short_name)
+        self.temperature = WheelTemperatureSensor(self.dcm, self.mem,
+                                                  self.short_name)
+        self.current = WheelCurrentSensor(self.dcm, self.mem, self.short_name)
+        self.stiffness = WheelStiffnessActuator(self.dcm, self.mem,
+                                                self.short_name)
+
+
+class WheelSpeed(object):
+    """Class which describes wheel speed (actuator and sensor)"""
+    def __init__(self, dcm, mem, short_name):
+        self.dcm = dcm
+        self.mem = mem
+        self.short_name = short_name
+        self.actuator = WheelSpeedActuator(self.dcm, self.mem, self.short_name)
+        self.sensor = WheelSpeedSensor(self.dcm, self.mem, self.short_name)
+
 
 class WheelSpeedActuator(SubDevice):
 
