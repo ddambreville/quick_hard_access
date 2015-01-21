@@ -18,6 +18,7 @@ The following classes have been added
 
 import qha_tools
 from math import pi, cos
+import threading
 
 
 def multiple_set(dcm, mem, datas, update_type="ClearAll", wait=False):
@@ -438,26 +439,33 @@ class JointPositionSensor(SubDevice):
 
 
 class JointPosition(object):
+
     """Class which describes a joint position (actuator and sensor)"""
+
     def __init__(self, dcm, mem, short_name):
         self.dcm = dcm
         self.mem = mem
         self.short_name = short_name
         self.actuator = \
-        JointPositionActuator(self.dcm, self.mem, self.short_name)
+            JointPositionActuator(self.dcm, self.mem, self.short_name)
         self.sensor = JointPositionSensor(self.dcm, self.mem, self.short_name)
 
+
 class Joint(object):
+
     """Class which describes a joint."""
+
     def __init__(self, dcm, mem, short_name):
         self.dcm = dcm
         self.mem = mem
         self.short_name = short_name
         self.position = JointPosition(self.dcm, self.mem, self.short_name)
-        self.temperature = JointTemperature(self.dcm, self.mem, self.short_name)
+        self.temperature = JointTemperature(
+            self.dcm, self.mem, self.short_name)
         self.current = JointCurrentSensor(self.dcm, self.mem, self.short_name)
         self.hardness = \
-        JointHardnessActuator(self.dcm, self.mem, self.short_name)
+            JointHardnessActuator(self.dcm, self.mem, self.short_name)
+
 
 class JointHardnessActuator(SubDevice):
 
@@ -647,8 +655,11 @@ class JointTemperature(SubDevice):
 
 # Wheels classes
 
+
 class Wheels(object):
+
     """Class which describes Pepper wheels"""
+
     def __init__(self, dcm, mem):
         self.dcm = dcm
         self.mem = mem
@@ -658,7 +669,9 @@ class Wheels(object):
 
 
 class Wheel(object):
+
     """Class which describes a wheel on Pepper robot."""
+
     def __init__(self, dcm, mem, short_name):
         self.dcm = dcm
         self.mem = mem
@@ -672,7 +685,9 @@ class Wheel(object):
 
 
 class WheelSpeed(object):
+
     """Class which describes wheel speed (actuator and sensor)"""
+
     def __init__(self, dcm, mem, short_name):
         self.dcm = dcm
         self.mem = mem
@@ -1079,42 +1094,64 @@ class WheelsMotion(object):
                 WheelStiffnessActuator(self.dcm, self.mem, wheel_name)
             wheel_stiff_act.qvalue = (value, 0.0)
 
+    def set_wheel_command(self, command, wheel):
+        '''
+        Set wheel command with mqvalue
+        Allows to use thread to set value
+        '''
+        wheel.mqvalue = command
+
     def move_x(self, distance, wait=True):
         """The robot goes forward for 'distance' meters"""
         t_v = (abs(distance) - (0.5 * self.gamma_a * self.t_a * self.t_a) -
                (0.5 * self.gamma_f * self.t_f * self.t_f)) / self.vmax
         if t_v <= 0:
-            print "temps a vitesse constante nul"
+            # Adjust the acceleration & deceleration time
+            t_a = (0.4 * abs(distance)) / self.vmax
+            t_f = (0.4 * abs(distance)) / self.vmax
+            gamma_a = self.vmax / self.t_a
+            gamma_f = self.vmax / self.t_f
+            t_v = (abs(distance) - (0.5 * gamma_a * t_a * t_a) -
+                   (0.5 * gamma_f * t_f * t_f)) / self.vmax
+            t1 = t_a
+            t2 = t1 + t_v
+            t3 = t2 + t_f
         else:
             t1 = self.t_a
             t2 = t1 + t_v
             t3 = t2 + self.t_f
 
-            self.stiff_wheels(["WheelFR", "WheelFL"], 1.0)
+        self.stiff_wheels(["WheelFR", "WheelFL"], 1.0)
 
-            if distance < 0:
-                speed = -self.speed
-            else:
-                speed = self.speed
+        if distance < 0:
+            speed = -self.speed
+        else:
+            speed = self.speed
 
-            timed_commands_wheelfr = [
-                (0.0, 0),
-                (-speed, 1000 * t1),
-                (-speed, 1000 * t2),
-                (0.0, 1000 * t3)]
+        timed_commands_wheelfr = [
+            (0.0, 0),
+            (-speed, 1000 * t1),
+            (-speed, 1000 * t2),
+            (0.0, 1000 * t3)]
 
-            timed_commands_wheelfl = [
-                (0.0, 0),
-                (speed, 1000 * t1),
-                (speed, 1000 * t2),
-                (0.0, 1000 * t3)]
-
-            self.wheelfr_speed_actuator.mqvalue = timed_commands_wheelfr
-            self.wheelfl_speed_actuator.mqvalue = timed_commands_wheelfl
-
-            if wait:
-                qha_tools.wait(self.dcm, 1000 * t3)
-                self.stiff_wheels(["WheelFR", "WheelFL"], 0.0)
+        timed_commands_wheelfl = [
+            (0.0, 0),
+            (speed, 1000 * t1),
+            (speed, 1000 * t2),
+            (0.0, 1000 * t3)]
+        thread_list = []
+        thread_list.append(
+            threading.Thread(target=self.set_wheel_command, args=(
+                timed_commands_wheelfr, self.wheelfr_speed_actuator)))
+        thread_list.append(
+            threading.Thread(target=self.set_wheel_command, args=(
+                timed_commands_wheelfl, self.wheelfl_speed_actuator)))
+        for each in thread_list:
+            # Start the wheels motion at the same time
+            each.start()
+        if wait:
+            qha_tools.wait(self.dcm, 1000 * t3)
+            self.stiff_wheels(["WheelFR", "WheelFL"], 0.0)
 
     def move_y(self, distance, wait=True):
         """The robot goes forward for 'distance' meters"""
@@ -1557,6 +1594,7 @@ class Fuse(object):
 # Fan classes
 
 class FanBoardHardnessActuator(SubDevice):
+
     """
     Class for JULIETTE robot.
     It describes fanboard actuator.
@@ -1570,6 +1608,7 @@ class FanBoardHardnessActuator(SubDevice):
 
 
 class FanFrequencySensor(SubDevice):
+
     """
     Class for JULIETTE robot.
     It describes the fans frequency sensors.
@@ -1588,6 +1627,7 @@ class FanFrequencySensor(SubDevice):
 
 
 class FanBoardFan(SubDevice):
+
     """
     Class for JULIETTE robot.
     It describes fanboard fans.
@@ -1609,7 +1649,9 @@ class FanBoardFan(SubDevice):
 
     status = property(_get_status, _set_status)
 
+
 class Fans(object):
+
     """
     Class for Juliette robot.
     It describes the robot fans.
@@ -1620,17 +1662,18 @@ class Fans(object):
     [2.] [Setter example] You want to turn on fans hardness now
     fans.hardness.qqvalue = 1.0
     """
+
     def __init__(self, dcm, mem):
         self.dcm = dcm
         self.mem = mem
         self.fan = FanBoardFan(self.dcm, self.mem)
         self.hardness = FanBoardHardnessActuator(self.dcm, self.mem)
         self.leftfanfrequency = \
-        FanFrequencySensor(self.dcm, self.mem, "FanLeft")
+            FanFrequencySensor(self.dcm, self.mem, "FanLeft")
         self.centerfanfrequency = \
-        FanFrequencySensor(self.dcm, self.mem, "FanCenter")
+            FanFrequencySensor(self.dcm, self.mem, "FanCenter")
         self.rightfanfrequency = \
-        FanFrequencySensor(self.dcm, self.mem, "FanRight")
+            FanFrequencySensor(self.dcm, self.mem, "FanRight")
 
 
 class Laser(SubDevice):
