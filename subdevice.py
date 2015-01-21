@@ -1101,7 +1101,43 @@ class WheelsMotion(object):
         '''
         wheel.mqvalue = command
 
-    def move_x(self, distance, wait=True):
+    def move_x(self, vitesse):
+        '''
+        Move X function
+        '''
+        if vitesse != self.vmax:
+            self.t_a = vitesse / self.gamma_a  # s
+            self.speed = vitesse * cos(self.angle_wheels_robot) / self.r_roue
+        speed = self.speed
+        timed_commands_wheelfr = [
+            (0.0, 0),
+            (-speed, 1000 * self.t_a)]
+
+        timed_commands_wheelfl = [
+            (0.0, 0),
+            (speed, 1000 * self.t_a)]
+        self.stiff_wheels(["WheelFR", "WheelFL"], 1.0)
+        thread_list = []
+        thread_list.append(
+            threading.Thread(target=self.set_wheel_command, args=(
+                timed_commands_wheelfr, self.wheelfr_speed_actuator)))
+        thread_list.append(
+            threading.Thread(target=self.set_wheel_command, args=(
+                timed_commands_wheelfl, self.wheelfl_speed_actuator)))
+        for each in thread_list:
+            # Start the wheels motion at the same time
+            each.start()
+
+    def stop_robot(self):
+        '''
+        Stop robot motion
+        '''
+        self.wheelfr_speed_actuator.qvalue = (0.0, 800)
+        self.wheelfl_speed_actuator.qvalue = (0.0, 800)
+        self.wheelb_speed_actuator.qvalue = (0.0, 800)
+        self.stiff_wheels(["WheelFR", "WheelFL", "WheelFR"], 0.0)
+
+    def moveto_x(self, distance, wait=True):
         """The robot goes forward for 'distance' meters"""
         t_v = (abs(distance) - (0.5 * self.gamma_a * self.t_a * self.t_a) -
                (0.5 * self.gamma_f * self.t_f * self.t_f)) / self.vmax
@@ -1153,7 +1189,7 @@ class WheelsMotion(object):
             qha_tools.wait(self.dcm, 1000 * t3)
             self.stiff_wheels(["WheelFR", "WheelFL"], 0.0)
 
-    def move_y(self, distance, wait=True):
+    def moveto_y(self, distance, wait=True):
         """The robot goes forward for 'distance' meters"""
         t_v = (abs(distance) - (0.5 * self.gamma_a * self.t_a * self.t_a) -
                (0.5 * self.gamma_f * self.t_f * self.t_f)) / self.vmax
